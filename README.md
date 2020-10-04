@@ -10,7 +10,7 @@ This package is meant to be used with the [@polakdot-js/api](https://github.com/
 
 ```ts
 ... // API imports
-import * as plasmDefinitions from 'plasm-types/interfaces/definitions';
+import * as plasmDefinitions from '@plasm/types/interfaces/definitions';
 
 const types = Object.values(plasmDefinitions).reduce((res, { types }): object => ({ ...res, ...types }), {});
 
@@ -20,15 +20,6 @@ const options: ApiOptions = {
     provider: new WsProvider(networkEndpoint),
     types: {
         ...types,
-        // aliases that don't do well as part of interfaces
-        'voting::VoteType': 'VoteType',
-        'voting::TallyType': 'TallyType',
-        // chain-specific overrides
-        Address: 'GenericAddress',
-        Keys: 'SessionKeys4',
-        StakingLedger: 'StakingLedgerTo223',
-        Votes: 'VotesTo230',
-        ReferendumInfo: 'ReferendumInfoTo239',
     },
     // override duplicate type name
     typesAlias: { voting: { Tally: 'VotingTally' } },
@@ -46,7 +37,7 @@ Once you have a running node, execute the following commands on your terminal.
 
 ```bash
 # get meta data from a local node. This will generate plasm.json
-$ chmod +x get-types.sh
+$ chmod +x get-types.sh && ./get-types.sh
 
 # install dependencies
 $ yarn

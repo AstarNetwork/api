@@ -5,14 +5,12 @@ import { AuthorityId } from '@polkadot/types/interfaces/consensus';
 import { CodeHash, Gas, Schedule } from '@polkadot/types/interfaces/contracts';
 import { Extrinsic, Signature } from '@polkadot/types/interfaces/extrinsics';
 import { GrandpaEquivocationProof, KeyOwnerProof } from '@polkadot/types/interfaces/grandpa';
-import { AccountId, AccountIndex, Address, Balance, BalanceOf, BlockNumber, Call, ChangesTrieConfiguration, H256, Hash, KeyValue, LookupSource, Moment, Perbill, Weight } from '@polkadot/types/interfaces/runtime';
+import { AccountId, AccountIndex, Address, Balance, BalanceOf, BlockNumber, Call, ChangesTrieConfiguration, H256, KeyValue, LookupSource, Moment, Perbill, Weight } from '@polkadot/types/interfaces/runtime';
 import { Keys } from '@polkadot/types/interfaces/session';
 import { EraIndex, RewardDestination } from '@polkadot/types/interfaces/staking';
 import { Key } from '@polkadot/types/interfaces/system';
 import { Parameters } from 'plasm-types/interfaces/dappsStaking';
-import { PredicateHash, PropertyOf } from 'plasm-types/interfaces/ovm';
 import { AuthorityVote, ClaimId, ClaimVote, Lockdrop, TickerRate } from 'plasm-types/interfaces/plasmLockdrop';
-import { RangeOf } from 'plasm-types/interfaces/plasma';
 import { ApiTypes, SubmittableExtrinsic } from '@polkadot/api/types';
 declare module '@polkadot/api/types/submittable' {
     interface AugmentedSubmittables<ApiType> {
@@ -472,142 +470,6 @@ declare module '@polkadot/api/types/submittable' {
                 optionExpired?: any;
                 optionP?: any;
             } | string | Uint8Array) => SubmittableExtrinsic<ApiType>>;
-        };
-        ovm: {
-            /**
-             * Challenge to an existing game instance by a property.
-             *
-             * challenge will be added to `challenges` field of challenged game instance.
-             * if property does not exist, revert.
-             * if challenge with same property was made before, revert.
-             *
-             * TODO: weight
-             **/
-            challenge: AugmentedSubmittable<(property: PropertyOf | {
-                predicateAddress?: any;
-                inputs?: any;
-            } | string | Uint8Array, challengeProperty: PropertyOf | {
-                predicateAddress?: any;
-                inputs?: any;
-            } | string | Uint8Array) => SubmittableExtrinsic<ApiType>>;
-            /**
-             * Claims property and create new game. Id of game is hash of claimed property
-             * TODO: weight
-             **/
-            claim: AugmentedSubmittable<(claim: PropertyOf | {
-                predicateAddress?: any;
-                inputs?: any;
-            } | string | Uint8Array) => SubmittableExtrinsic<ApiType>>;
-            /**
-             * Deploy predicate and made predicate address as AccountId.
-             * TODO: weight
-             **/
-            instantiate: AugmentedSubmittable<(predicateHash: PredicateHash | string | Uint8Array, inputs: Bytes | string | Uint8Array) => SubmittableExtrinsic<ApiType>>;
-            /**
-             * Stores the given binary Wasm code into the chain's storage and returns its `codehash`.
-             * You can instantiate contracts only with stored code.
-             **/
-            putCode: AugmentedSubmittable<(predicate: Bytes | string | Uint8Array) => SubmittableExtrinsic<ApiType>>;
-            /**
-             * remove challenge
-             * set challenging game decision to false and remove it from challenges field of challenged game
-             * if property does not exist, revert.
-             * if challenge property does not exist, revert.
-             *
-             * TODO: weight
-             **/
-            removeChallenge: AugmentedSubmittable<(property: PropertyOf | {
-                predicateAddress?: any;
-                inputs?: any;
-            } | string | Uint8Array, challengeProperty: PropertyOf | {
-                predicateAddress?: any;
-                inputs?: any;
-            } | string | Uint8Array) => SubmittableExtrinsic<ApiType>>;
-            /**
-             * set game result to given result value.
-             * only called from dispute contract
-             *
-             * TODO: weight
-             **/
-            setGameResult: AugmentedSubmittable<(property: PropertyOf | {
-                predicateAddress?: any;
-                inputs?: any;
-            } | string | Uint8Array, result: bool | boolean | Uint8Array) => SubmittableExtrinsic<ApiType>>;
-            /**
-             * settle game
-             * settle started game whose dispute period has passed.
-             * if no challenge for the property exists, decide to true.
-             * if any of its challenges decided to true, decide game to false.
-             * if undecided challenge remains, revert.
-             *
-             * TODO: weight
-             **/
-            settleGame: AugmentedSubmittable<(property: PropertyOf | {
-                predicateAddress?: any;
-                inputs?: any;
-            } | string | Uint8Array) => SubmittableExtrinsic<ApiType>>;
-        };
-        plasma: {
-            /**
-             * Commitment constructor + Deposit constructor
-             * TODO: weight
-             **/
-            deploy: AugmentedSubmittable<(aggregatorId: AccountId | string | Uint8Array, erc20: AccountId | string | Uint8Array, stateUpdatePredicate: AccountId | string | Uint8Array, exitPredicate: AccountId | string | Uint8Array, exitDepositPredicate: AccountId | string | Uint8Array) => SubmittableExtrinsic<ApiType>>;
-            /**
-             * deposit ERC20 token to deposit contract with initial state.
-             * following https://docs.plasma.group/projects/spec/en/latest/src/02-contracts/deposit-contract.html#deposit
-             * - @param amount to deposit
-             * - @param initial_state The initial state of deposit
-             * TODO: weight
-             **/
-            deposit: AugmentedSubmittable<(plappsId: AccountId | string | Uint8Array, amount: BalanceOf | AnyNumber | Uint8Array, initialState: PropertyOf | {
-                predicateAddress?: any;
-                inputs?: any;
-            } | string | Uint8Array, gasLimit: Gas | AnyNumber | Uint8Array) => SubmittableExtrinsic<ApiType>>;
-            /**
-             * TODO: weight, not external
-             **/
-            extendDepositedRanges: AugmentedSubmittable<(plappsId: AccountId | string | Uint8Array, amount: BalanceOf | AnyNumber | Uint8Array) => SubmittableExtrinsic<ApiType>>;
-            /**
-             * finalizeCheckpoint
-             * - @param _checkpointProperty A property which is instance of checkpoint predicate
-             * its first input is range to create checkpoint and second input is property for stateObject.
-             * TODO: weight
-             **/
-            finalizeCheckpoint: AugmentedSubmittable<(plappsId: AccountId | string | Uint8Array, checkpointProperty: PropertyOf | {
-                predicateAddress?: any;
-                inputs?: any;
-            } | string | Uint8Array) => SubmittableExtrinsic<ApiType>>;
-            /**
-             * finalizeExit
-             * - @param _exitProperty A property which is instance of exit predicate and its inputs are range and StateUpdate that exiting account wants to withdraw.
-             * _exitProperty can be a property of ether ExitPredicate or ExitDepositPredicate.
-             * - @param _depositedRangeId Id of deposited range
-             * - @return return StateUpdate of exit property which is finalized.
-             * - @dev The steps of finalizeExit.
-             * 1. Serialize exit property
-             * 2. check the property is decided by Adjudication Contract.
-             * 3. Transfer asset to payout contract corresponding to StateObject.
-             *
-             * Please alse see https://docs.plasma.group/projects/spec/en/latest/src/02-contracts/deposit-contract.html#finalizeexit
-             * TODO: weight
-             **/
-            finalizeExit: AugmentedSubmittable<(plappsId: AccountId | string | Uint8Array, exitProperty: PropertyOf | {
-                predicateAddress?: any;
-                inputs?: any;
-            } | string | Uint8Array, depositedRangeId: BalanceOf | AnyNumber | Uint8Array, owner: AccountId | string | Uint8Array) => SubmittableExtrinsic<ApiType>>;
-            /**
-             * TODO: weight, not external
-             **/
-            removeDepositedRange: AugmentedSubmittable<(plappsId: AccountId | string | Uint8Array, range: RangeOf | {
-                start?: any;
-                end?: any;
-            } | string | Uint8Array, depositedRangeId: BalanceOf | AnyNumber | Uint8Array) => SubmittableExtrinsic<ApiType>>;
-            /**
-             * Submit root hash of Plasma chain.
-             * TODO: weight
-             **/
-            submitRoot: AugmentedSubmittable<(plappsId: AccountId | string | Uint8Array, blockNumber: BlockNumber | AnyNumber | Uint8Array, root: Hash | string | Uint8Array) => SubmittableExtrinsic<ApiType>>;
         };
         plasmLockdrop: {
             /**
