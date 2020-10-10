@@ -21,8 +21,6 @@ const options: ApiOptions = {
     types: {
         ...types,
     },
-    // override duplicate type name
-    typesAlias: { voting: { Tally: 'VotingTally' } },
 };
 
 const api = new ApiRx(options);
@@ -30,19 +28,29 @@ const api = new ApiRx(options);
 
 ### Generating Types
 
-First you'll have to run a local Plasm node.
-You can start by visiting <https://github.com/staketechnologies/Plasm> to learn more.
+First, you'll have to manually define chain specific types for each pallets to the `interfaces/<module>/definitions.ts` file.
+It should be in the following format:
 
-Once you have a running node, execute the following commands on your terminal.
+```typescript
+export default {
+    types: {
+        TypeA: 'H256',
+        StructB: {
+            id: 'u8',
+            value_hash: 'H256',
+        }
+        ...
+    },
+};
+```
+
+Once that is done, you can simply run the following command to build the package.
 
 ```bash
-# get meta data from a local node. This will generate plasm.json
-$ chmod +x get-types.sh && ./get-types.sh
-
 # install dependencies
 $ yarn
 
-# generate type definitions and compiled JS
+# generate type definitions and compile to JS
 $ yarn build
 
 # lint output
@@ -51,13 +59,5 @@ $ yarn lint
 
 If everything worked well, you can see the `src/interfaces/` folder being populated with new definitions files.
 
-### Build Package for Publishing
+Currently, the build script uses `wss://rpc.dusty.plasmnet.io` as the endpoint for fetching chain metadata.
 
-For publishing to NPM, run `yarn run tsc` in the root of this project.
-
-## Adding New Types
-
-For every new runtime module added to Plasm Network, you will have to generate a new one.
-Custom types are defined inside `definitions.ts`.
-`/src/interfaces/definitions.ts` exports all the runtime definitions while the actual type definitions are defined in `/src/interfaces/<module>/definitions.ts`.
-You can add new types or edit existing ones by working with the respective folders.

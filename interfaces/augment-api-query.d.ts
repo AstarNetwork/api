@@ -1,6 +1,12 @@
 import { AnyNumber, ITuple, Observable } from '@polkadot/types/types';
 import { Option, Vec } from '@polkadot/types/codec';
 import { Bytes, bool, u32, u64 } from '@polkadot/types/primitive';
+import { EraStakingPoints, Parameters, StakingParameters } from '@plasm/types/interfaces/dappsStaking';
+import { ChallengeGameOf, PredicateContractOf, PredicateHash, PrefabOvmModule } from '@plasm/types/interfaces/ovm';
+import { AuthorityVote, Claim, ClaimId, DollarRate } from '@plasm/types/interfaces/plasmLockdrop';
+import { RangeOf } from '@plasm/types/interfaces/plasma';
+import { OfferOf } from '@plasm/types/interfaces/trading';
+import { UncleEntryItem } from '@polkadot/types/interfaces/authorship';
 import { BabeAuthorityWeight, MaybeRandomness, NextConfigDescriptor, Randomness } from '@polkadot/types/interfaces/babe';
 import { AccountData, BalanceLock } from '@polkadot/types/interfaces/balances';
 import { AuthorityId } from '@polkadot/types/interfaces/consensus';
@@ -11,12 +17,23 @@ import { Keys, SessionIndex } from '@polkadot/types/interfaces/session';
 import { ActiveEraInfo, EraIndex, Forcing, Nominations, RewardDestination, StakingLedger } from '@polkadot/types/interfaces/staking';
 import { AccountInfo, DigestOf, EventIndex, EventRecord, LastRuntimeUpgradeInfo, Phase } from '@polkadot/types/interfaces/system';
 import { Multiplier } from '@polkadot/types/interfaces/txpayment';
-import { EraStakingPoints, Parameters, StakingParameters } from 'plasm-types/interfaces/dappsStaking';
-import { AuthorityVote, Claim, ClaimId, DollarRate } from 'plasm-types/interfaces/plasmLockdrop';
-import { OfferOf } from 'plasm-types/interfaces/trading';
 import { ApiTypes } from '@polkadot/api/types';
 declare module '@polkadot/api/types/storage' {
     interface AugmentedQueries<ApiType> {
+        authorship: {
+            /**
+             * Author of current block.
+             **/
+            author: AugmentedQuery<ApiType, () => Observable<Option<AccountId>>>;
+            /**
+             * Whether uncles were already set in this block.
+             **/
+            didSetUncles: AugmentedQuery<ApiType, () => Observable<bool>>;
+            /**
+             * Uncles
+             **/
+            uncles: AugmentedQuery<ApiType, () => Observable<Vec<UncleEntryItem>>>;
+        };
         babe: {
             /**
              * Current epoch authorities.
@@ -138,6 +155,7 @@ declare module '@polkadot/api/types/storage' {
              * Map from all locked "stash" accounts to the controller account.
              **/
             bonded: AugmentedQuery<ApiType, (arg: AccountId | string | Uint8Array) => Observable<Option<AccountId>>>;
+            contractsUntreatedEra: AugmentedQuery<ApiType, (arg: AccountId | string | Uint8Array) => Observable<EraIndex>>;
             /**
              * The map from nominator stash key to the set of stash keys of all contracts to nominate.
              *
@@ -245,6 +263,75 @@ declare module '@polkadot/api/types/storage' {
              * A mapping from operators to operated contracts by them.
              **/
             operatorHasContracts: AugmentedQuery<ApiType, (arg: AccountId | string | Uint8Array) => Observable<Vec<AccountId>>>;
+        };
+        ovm: {
+            /**
+             * Current cost schedule for contracts.
+             **/
+            currentSchedule: AugmentedQuery<ApiType, () => Observable<Schedule>>;
+            /**
+             * Mapping the game id to Challenge Game.
+             **/
+            games: AugmentedQuery<ApiType, (arg: Hash | string | Uint8Array) => Observable<Option<ChallengeGameOf>>>;
+            /**
+             * A mapping between an original code hash and instrumented ovm(predicate) code, ready for execution.
+             **/
+            predicateCache: AugmentedQuery<ApiType, (arg: PredicateHash | string | Uint8Array) => Observable<Option<PrefabOvmModule>>>;
+            /**
+             * A mapping from an original code hash to the original code, untouched by instrumentation.
+             **/
+            predicateCodes: AugmentedQuery<ApiType, (arg: PredicateHash | string | Uint8Array) => Observable<Option<Bytes>>>;
+            /**
+             * Mapping the predicate address to Predicate.
+             * Predicate is handled similar to contracts.
+             **/
+            predicates: AugmentedQuery<ApiType, (arg: AccountId | string | Uint8Array) => Observable<Option<PredicateContractOf>>>;
+        };
+        plasma: {
+            /**
+             * Single aggregator address: AggregatorId
+             **/
+            aggregatorAddress: AugmentedQuery<ApiType, (arg: AccountId | string | Uint8Array) => Observable<AccountId>>;
+            /**
+             * History of Merkle Root
+             **/
+            blocks: AugmentedQueryDoubleMap<ApiType, (key1: AccountId | string | Uint8Array, key2: BlockNumber | AnyNumber | Uint8Array) => Observable<Hash>>;
+            /**
+             * Range's Checkpoints.
+             **/
+            checkpoints: AugmentedQueryDoubleMap<ApiType, (key1: AccountId | string | Uint8Array, key2: Hash | string | Uint8Array) => Observable<bool>>;
+            /**
+             * Current block number of commitment chain: BlockNumber
+             **/
+            currentBlock: AugmentedQuery<ApiType, (arg: AccountId | string | Uint8Array) => Observable<BlockNumber>>;
+            /**
+             * DepositedRanges are currently deposited ranges.
+             **/
+            depositedRanges: AugmentedQueryDoubleMap<ApiType, (key1: AccountId | string | Uint8Array, key2: BalanceOf | AnyNumber | Uint8Array) => Observable<RangeOf>>;
+            /**
+             * mapping from Plapps address to ERC20 based contract address.
+             **/
+            erc20: AugmentedQuery<ApiType, (arg: AccountId | string | Uint8Array) => Observable<AccountId>>;
+            /**
+             * mapping from Plapps address to ExitDeposit predicate address.
+             **/
+            exitDepositPredicate: AugmentedQuery<ApiType, (arg: AccountId | string | Uint8Array) => Observable<AccountId>>;
+            /**
+             * mapping from Plapps address to Exit predicate address.
+             **/
+            exitPredicate: AugmentedQuery<ApiType, (arg: AccountId | string | Uint8Array) => Observable<AccountId>>;
+            /**
+             * predicate address => payout address
+             **/
+            payout: AugmentedQuery<ApiType, (arg: AccountId | string | Uint8Array) => Observable<AccountId>>;
+            /**
+             * mapping from Plapps address to StateUpdate predicate address.
+             **/
+            stateUpdatePredicate: AugmentedQuery<ApiType, (arg: AccountId | string | Uint8Array) => Observable<AccountId>>;
+            /**
+             * TotalDeposited is the most right coin id which has been deposited.
+             **/
+            totalDeposited: AugmentedQuery<ApiType, (arg: AccountId | string | Uint8Array) => Observable<BalanceOf>>;
         };
         plasmLockdrop: {
             /**
