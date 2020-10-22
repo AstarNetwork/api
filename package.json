@@ -22,11 +22,11 @@
         "generate:meta": "ts-node --skip-project node_modules/.bin/polkadot-types-from-chain --package @plasm/types/interfaces --endpoint wss://rpc.dusty.plasmnet.io --output ./src/interfaces --strict",
         "lint": "tsc --noEmit --pretty"
     },
-    "dependencies": {},
+    "dependencies": {
+        "@polkadot/api": "^2.3.1"
+    },
     "devDependencies": {
-        "@polkadot/api": "^2.1.1",
-        "@polkadot/metadata": "^2.1.1",
-        "@polkadot/typegen": "^2.1.1",
+        "@polkadot/typegen": "^2.3.2-6",
         "ts-node": "^9.0.0",
         "typescript": "^4.0.3"
     },

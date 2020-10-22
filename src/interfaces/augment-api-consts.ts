@@ -91,6 +91,26 @@ declare module '@polkadot/api/types/consts' {
        **/
       windowSize: BlockNumber & AugmentedConst<ApiType>;
     };
+    indices: {
+      /**
+       * The deposit needed for reserving an index.
+       **/
+      deposit: BalanceOf & AugmentedConst<ApiType>;
+    };
+    nicks: {
+      /**
+       * The maximum length a name may be.
+       **/
+      maxLength: u32 & AugmentedConst<ApiType>;
+      /**
+       * The minimum length a name may be.
+       **/
+      minLength: u32 & AugmentedConst<ApiType>;
+      /**
+       * Reservation fee.
+       **/
+      reservationFee: BalanceOf & AugmentedConst<ApiType>;
+    };
     ovm: {
       /**
        * During the dispute period defined here, the user can challenge.
