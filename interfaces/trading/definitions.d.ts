@@ -3,7 +3,7 @@ declare const _default: {
         OfferState: {
             _enum: string[];
         };
-        OfferOf: {
+        Offer: {
             buyer: string;
             sender: string;
             contracts: string;
@@ -11,6 +11,7 @@ declare const _default: {
             expired: string;
             state: string;
         };
+        OfferOf: string;
     };
 };
 export default _default;

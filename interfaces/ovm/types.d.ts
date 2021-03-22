@@ -1,11 +1,16 @@
 import type { Bytes, Enum, Struct, Vec, u32 } from '@polkadot/types';
-import type { AccountId, BlockNumber, Hash, Weight } from '@polkadot/types/interfaces/runtime';
-/** @name ChallengeGameOf */
-export interface ChallengeGameOf extends Struct {
-    readonly propertyHash: Hash;
+import type { AccountId, BlockNumber, Hash } from '@polkadot/types/interfaces/runtime';
+/** @name ChallengeGame */
+export interface ChallengeGame extends Struct {
+    readonly property: Property;
     readonly challenges: Vec<Hash>;
     readonly decision: Decision;
     readonly createdBlock: BlockNumber;
+}
+/** @name Config */
+export interface Config extends Struct {
+    readonly schedule: Schedule;
+    readonly maxDepth: u32;
 }
 /** @name Decision */
 export interface Decision extends Enum {
@@ -13,32 +18,21 @@ export interface Decision extends Enum {
     readonly isTrue: boolean;
     readonly isFalse: boolean;
 }
-/** @name PredicateContractOf */
-export interface PredicateContractOf extends Struct {
+/** @name PredicateContract */
+export interface PredicateContract extends Struct {
     readonly predicateHash: Hash;
     readonly inputs: Bytes;
-}
-/** @name PredicateHash */
-export interface PredicateHash extends Hash {
-}
-/** @name PrefabOvmModule */
-export interface PrefabOvmModule extends Struct {
-    readonly scheduleVersion: u32;
-    readonly code: Bytes;
 }
 /** @name Property */
 export interface Property extends Struct {
     readonly predicateAddress: AccountId;
     readonly inputs: Vec<Bytes>;
 }
-/** @name PropertyOf */
-export interface PropertyOf extends Struct {
-    readonly predicateAddress: AccountId;
-    readonly inputs: Vec<Bytes>;
-}
 /** @name Schedule */
 export interface Schedule extends Struct {
     readonly version: u32;
-    readonly putCodePerByteCost: Weight;
+    readonly maxStackHeight: u32;
+    readonly maxMemoryPages: u32;
+    readonly maxTableSize: u32;
 }
 export declare type PHANTOM_OVM = 'ovm';

@@ -1,8 +1,10 @@
 // Auto-generated via `yarn polkadot-types-from-defs`, do not edit
 /* eslint-disable */
 
-import type { BTreeMap, Enum, Struct, bool, u128, u32 } from '@polkadot/types';
+import type { BTreeMap, Compact, Option, Struct, Vec, bool } from '@polkadot/types';
+import type { ITuple } from '@polkadot/types/types';
 import type { AccountId, Balance } from '@polkadot/types/interfaces/runtime';
+import type { EraIndex } from '@polkadot/types/interfaces/staking';
 
 /** @name EraStakingPoints */
 export interface EraStakingPoints extends Struct {
@@ -10,29 +12,26 @@ export interface EraStakingPoints extends Struct {
   readonly individual: BTreeMap<AccountId, Balance>;
 }
 
-/** @name Parameters */
-export interface Parameters extends Struct {
-  readonly canBeNominated: bool;
-  readonly optionExpired: u128;
-  readonly optionP: u32;
+/** @name Nominations */
+export interface Nominations extends Struct {
+  readonly targets: Vec<ITuple<[AccountId, Balance]>>;
+  readonly submittedIn: EraIndex;
+  readonly suppressed: bool;
 }
 
-/** @name Releases */
-export interface Releases extends Enum {
-  readonly isV100: boolean;
+/** @name StakingLedger */
+export interface StakingLedger extends Struct {
+  readonly stash: AccountId;
+  readonly total: Compact<Balance>;
+  readonly active: Compact<Balance>;
+  readonly unlocking: Vec<UnlockChunk>;
+  readonly lastReward: Option<EraIndex>;
 }
 
-/** @name StakingParameters */
-export interface StakingParameters extends Struct {
-  readonly canBeNominated: bool;
-  readonly optionExpired: u128;
-  readonly optionP: u32;
-}
-
-/** @name VoteCounts */
-export interface VoteCounts extends Struct {
-  readonly bad: u32;
-  readonly good: u32;
+/** @name UnlockChunk */
+export interface UnlockChunk extends Struct {
+  readonly value: Compact<Balance>;
+  readonly era: Compact<EraIndex>;
 }
 
 export type PHANTOM_DAPPSSTAKING = 'dappsStaking';

@@ -5,13 +5,14 @@ export default {
         OfferState: {
             _enum: ['Waiting', 'Reject', 'Accept'],
         },
-        OfferOf: {
+        Offer: {
             buyer: 'AccountId',
             sender: 'AccountId',
             contracts: 'Vec<AccountId>',
             amount: 'Balance',
-            expired: 'BlockNumber',
+            expired: 'Moment',
             state: 'OfferState',
         },
+        OfferOf: 'Offer',
     },
 };

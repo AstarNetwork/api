@@ -1,34 +1,31 @@
 declare const _default: {
     types: {
-        Decision: {
-            _enum: string[];
-        };
-        ChallengeGameOf: {
-            propertyHash: string;
-            challenges: string;
-            decision: string;
-            createdBlock: string;
-        };
-        PredicateContractOf: {
+        PredicateContract: {
             predicateHash: string;
             inputs: string;
-        };
-        PredicateHash: string;
-        Schedule: {
-            version: string;
-            putCodePerByteCost: string;
-        };
-        PrefabOvmModule: {
-            scheduleVersion: string;
-            code: string;
         };
         Property: {
             predicateAddress: string;
             inputs: string;
         };
-        PropertyOf: {
-            predicateAddress: string;
-            inputs: string;
+        Decision: {
+            _enum: string[];
+        };
+        ChallengeGame: {
+            property: string;
+            challenges: string;
+            decision: string;
+            createdBlock: string;
+        };
+        Schedule: {
+            version: string;
+            maxStackHeight: string;
+            maxMemoryPages: string;
+            maxTableSize: string;
+        };
+        Config: {
+            schedule: string;
+            maxDepth: string;
         };
     };
 };

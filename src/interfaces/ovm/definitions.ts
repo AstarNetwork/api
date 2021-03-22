@@ -2,35 +2,32 @@
 
 export default {
     types: {
-        Decision: {
-            _enum: ["Undecided", "True", "False"]
-        },
-        ChallengeGameOf: {
-            propertyHash: "Hash",
-            challenges: "Vec<Hash>",
-            decision: "Decision",
-            createdBlock: "BlockNumber"
-        },
-        PredicateContractOf: {
+        PredicateContract: {
             predicateHash: "Hash",
             inputs: "Vec<u8>"
-        },
-        PredicateHash: "Hash",
-        Schedule: {
-            version: "u32",
-            putCodePerByteCost: "Weight"
-        },
-        PrefabOvmModule: {
-            scheduleVersion: "u32",
-            code: "Vec<u8>"
         },
         Property: {
             predicateAddress: "AccountId",
             inputs: "Vec<Vec<u8>>"
         },
-        PropertyOf: {
-            predicateAddress: "AccountId",
-            inputs: "Vec<Vec<u8>>"
+        Decision: {
+            _enum: ["Undecided", "True", "False"]
+        },
+        ChallengeGame: {
+            property: "Property<AccountId>",
+            challenges: "Vec<Hash>",
+            decision: "Decision",
+            createdBlock: "BlockNumber"
+        },
+        Schedule: {
+            version: "u32",
+            maxStackHeight: 'u32',
+            maxMemoryPages: 'u32',
+            maxTableSize: 'u32',
+        },
+        Config: {
+            schedule: 'Schedule',
+            maxDepth: 'u32',
         },
     }
 }

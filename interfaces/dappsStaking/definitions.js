@@ -3,26 +3,25 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = {
     types: {
-        Releases: {
-            _enum: ['V1_0_0'],
-        },
-        StakingParameters: {
-            canBeNominated: 'bool',
-            optionExpired: 'u128',
-            optionP: 'u32',
-        },
-        Parameters: {
-            canBeNominated: 'bool',
-            optionExpired: 'u128',
-            optionP: 'u32',
+        Nominations: {
+            targets: 'Vec<(AccountId, Balance)>',
+            submittedIn: 'EraIndex',
+            suppressed: 'bool',
         },
         EraStakingPoints: {
             total: 'Balance',
             individual: 'BTreeMap<AccountId, Balance>',
         },
-        VoteCounts: {
-            bad: 'u32',
-            good: 'u32',
+        UnlockChunk: {
+            value: 'Compact<Balance>',
+            era: 'Compact<EraIndex>',
+        },
+        StakingLedger: {
+            stash: 'AccountId',
+            total: 'Compact<Balance>',
+            active: 'Compact<Balance>',
+            unlocking: 'Vec<UnlockChunk<Balance>>',
+            lastReward: 'Option<EraIndex>',
         },
     },
 };

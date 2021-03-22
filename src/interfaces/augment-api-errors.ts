@@ -5,36 +5,6 @@ import type { ApiTypes } from '@polkadot/api/types';
 
 declare module '@polkadot/api/types/errors' {
   export interface AugmentedErrors<ApiType> {
-    authorship: {
-      /**
-       * The uncle is genesis.
-       **/
-      GenesisUncle: AugmentedError<ApiType>;
-      /**
-       * The uncle parent not in the chain.
-       **/
-      InvalidUncleParent: AugmentedError<ApiType>;
-      /**
-       * The uncle isn't recent enough to be included.
-       **/
-      OldUncle: AugmentedError<ApiType>;
-      /**
-       * The uncle is too high in chain.
-       **/
-      TooHighUncle: AugmentedError<ApiType>;
-      /**
-       * Too many uncles.
-       **/
-      TooManyUncles: AugmentedError<ApiType>;
-      /**
-       * The uncle is already included.
-       **/
-      UncleAlreadyIncluded: AugmentedError<ApiType>;
-      /**
-       * Uncles already set in the block.
-       **/
-      UnclesAlreadySet: AugmentedError<ApiType>;
-    };
     balances: {
       /**
        * Beneficiary account must pre-exist
@@ -71,29 +41,6 @@ declare module '@polkadot/api/types/errors' {
     };
     contracts: {
       /**
-       * Performing the requested transfer would have brought the contract below
-       * the subsistence threshold. No transfer is allowed to do this in order to allow
-       * for a tombstone to be created. Use `seal_terminate` to remove a contract without
-       * leaving a tombstone behind.
-       **/
-      BelowSubsistenceThreshold: AugmentedError<ApiType>;
-      /**
-       * No code could be found at the supplied code hash.
-       **/
-      CodeNotFound: AugmentedError<ApiType>;
-      /**
-       * The code supplied to `put_code` exceeds the limit specified in the current schedule.
-       **/
-      CodeTooLarge: AugmentedError<ApiType>;
-      /**
-       * Contract trapped during execution.
-       **/
-      ContractTrapped: AugmentedError<ApiType>;
-      /**
-       * Input passed to a contract API function failed to decode as expected type.
-       **/
-      DecodingFailed: AugmentedError<ApiType>;
-      /**
        * An origin TrieId written in the current block.
        **/
       InvalidContractOrigin: AugmentedError<ApiType>;
@@ -117,65 +64,6 @@ declare module '@polkadot/api/types/errors' {
        * Tombstones don't match.
        **/
       InvalidTombstone: AugmentedError<ApiType>;
-      /**
-       * Performing a call was denied because the calling depth reached the limit
-       * of what is specified in the schedule.
-       **/
-      MaxCallDepthReached: AugmentedError<ApiType>;
-      /**
-       * The newly created contract is below the subsistence threshold after executing
-       * its contructor. No contracts are allowed to exist below that threshold.
-       **/
-      NewContractNotFunded: AugmentedError<ApiType>;
-      /**
-       * The contract that was called is either no contract at all (a plain account)
-       * or is a tombstone.
-       **/
-      NotCallable: AugmentedError<ApiType>;
-      /**
-       * A buffer outside of sandbox memory was passed to a contract API function.
-       **/
-      OutOfBounds: AugmentedError<ApiType>;
-      /**
-       * The executed contract exhausted its gas limit.
-       **/
-      OutOfGas: AugmentedError<ApiType>;
-      /**
-       * The output buffer supplied to a contract API call was too small.
-       **/
-      OutputBufferTooSmall: AugmentedError<ApiType>;
-      /**
-       * Performing the requested transfer failed for a reason originating in the
-       * chosen currency implementation of the runtime. Most probably the balance is
-       * too low or locks are placed on it.
-       **/
-      TransferFailed: AugmentedError<ApiType>;
-    };
-    evm: {
-      /**
-       * Not enough balance to perform action
-       **/
-      BalanceLow: AugmentedError<ApiType>;
-      /**
-       * Calculating total fee overflowed
-       **/
-      FeeOverflow: AugmentedError<ApiType>;
-      /**
-       * Gas price is too low.
-       **/
-      GasPriceTooLow: AugmentedError<ApiType>;
-      /**
-       * Nonce is invalid
-       **/
-      InvalidNonce: AugmentedError<ApiType>;
-      /**
-       * Calculating total payment overflowed
-       **/
-      PaymentOverflow: AugmentedError<ApiType>;
-      /**
-       * Withdraw fee failed
-       **/
-      WithdrawFailed: AugmentedError<ApiType>;
     };
     finalityTracker: {
       /**
@@ -193,18 +81,6 @@ declare module '@polkadot/api/types/errors' {
        **/
       ChangePending: AugmentedError<ApiType>;
       /**
-       * A given equivocation report is valid but already previously reported.
-       **/
-      DuplicateOffenceReport: AugmentedError<ApiType>;
-      /**
-       * An equivocation proof provided as part of an equivocation report is invalid.
-       **/
-      InvalidEquivocationProof: AugmentedError<ApiType>;
-      /**
-       * A key ownership proof provided as part of an equivocation report is invalid.
-       **/
-      InvalidKeyOwnershipProof: AugmentedError<ApiType>;
-      /**
        * Attempt to signal GRANDPA pause when the authority set isn't live
        * (either paused or already pending pause).
        **/
@@ -218,66 +94,6 @@ declare module '@polkadot/api/types/errors' {
        * Cannot signal forced change so soon after last.
        **/
       TooSoon: AugmentedError<ApiType>;
-    };
-    nicks: {
-      /**
-       * A name is too long.
-       **/
-      TooLong: AugmentedError<ApiType>;
-      /**
-       * A name is too short.
-       **/
-      TooShort: AugmentedError<ApiType>;
-      /**
-       * An account isn't named.
-       **/
-      Unnamed: AugmentedError<ApiType>;
-    };
-    ovm: {
-      /**
-       * challenge is already started
-       **/
-      ChallengeIsAlreadyStarted: AugmentedError<ApiType>;
-      /**
-       * challenge is not in the challenge list
-       **/
-      ChallengeIsNotInTheChallengeList: AugmentedError<ApiType>;
-      /**
-       * challenge list is not empty
-       **/
-      ChallengeListIsNotEmpty: AugmentedError<ApiType>;
-      /**
-       * challenge property is not decided to false
-       **/
-      ChallengePropertyIsNotDecidedToFalse: AugmentedError<ApiType>;
-      /**
-       * dispute period has not been passed
-       **/
-      DisputePeriodHasNotBeenPassed: AugmentedError<ApiType>;
-      /**
-       * Does not exist game
-       **/
-      DoesNotExistGame: AugmentedError<ApiType>;
-      /**
-       * game is already started
-       **/
-      GameIsAlradyStarted: AugmentedError<ApiType>;
-      /**
-       * setPredicateDecision must be called from predicate
-       **/
-      MustBeCalledFromPredicate: AugmentedError<ApiType>;
-      /**
-       * index must be less than challenges.length
-       **/
-      OutOfRangeOfChallenges: AugmentedError<ApiType>;
-      /**
-       * property is not claimed
-       **/
-      PropertyIsNotClaimed: AugmentedError<ApiType>;
-      /**
-       * undecided challenge exists
-       **/
-      UndecidedChallengeExists: AugmentedError<ApiType>;
     };
     plasmLockdrop: {
       /**

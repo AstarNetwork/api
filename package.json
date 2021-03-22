@@ -19,14 +19,14 @@
     "scripts": {
         "build": "yarn generate:defs && yarn generate:meta && tsc",
         "generate:defs": "ts-node --skip-project node_modules/.bin/polkadot-types-from-defs --package @plasm/types/interfaces --input ./src/interfaces",
-        "generate:meta": "ts-node --skip-project node_modules/.bin/polkadot-types-from-chain --package @plasm/types/interfaces --endpoint wss://rpc.dusty.plasmnet.io --output ./src/interfaces --strict",
+        "generate:meta": "ts-node --skip-project node_modules/.bin/polkadot-types-from-chain --package @plasm/types/interfaces --endpoint wss://rpc.plasmnet.io --output ./src/interfaces --strict",
         "lint": "tsc --noEmit --pretty"
     },
     "dependencies": {
-        "@polkadot/api": "^3.5.1"
+        "@polkadot/api": "^4.2.1"
     },
     "devDependencies": {
-        "@polkadot/typegen": "^3.5.1",
+        "@polkadot/typegen": "^4.2.1",
         "ts-node": "^9.1.1",
         "typescript": "^4.1.3"
     },

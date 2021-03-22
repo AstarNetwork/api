@@ -1,7 +1,7 @@
-import type { Vec, u32, u64 } from '@polkadot/types';
-import type { AccountId, Balance, BalanceOf, BlockNumber, Moment, RuntimeDbWeight, Weight } from '@polkadot/types/interfaces/runtime';
+import type { u32, u64 } from '@polkadot/types';
+import type { Gas } from '@polkadot/types/interfaces/contracts';
+import type { Balance, BalanceOf, BlockNumber, Moment } from '@polkadot/types/interfaces/runtime';
 import type { SessionIndex } from '@polkadot/types/interfaces/session';
-import type { WeightToFeeCoefficient } from '@polkadot/types/interfaces/support';
 import type { ApiTypes } from '@polkadot/api/types';
 declare module '@polkadot/api/types/consts' {
     interface AugmentedConsts<ApiType> {
@@ -27,6 +27,26 @@ declare module '@polkadot/api/types/consts' {
             existentialDeposit: Balance & AugmentedConst<ApiType>;
         };
         contracts: {
+            /**
+             * The maximum amount of gas that could be expended per block. A reasonable
+             * default value is 10_000_000.
+             **/
+            blockGasLimit: Gas & AugmentedConst<ApiType>;
+            /**
+             * The base fee charged for calling into a contract. A reasonable default
+             * value is 135.
+             **/
+            callBaseFee: Gas & AugmentedConst<ApiType>;
+            /**
+             * The fee required to instantiate a contract instance. A reasonable default value
+             * is 21.
+             **/
+            contractFee: BalanceOf & AugmentedConst<ApiType>;
+            /**
+             * The base fee charged for instantiating a contract. A reasonable default value
+             * is 175.
+             **/
+            instantiateBaseFee: Gas & AugmentedConst<ApiType>;
             /**
              * The maximum nesting level of a call/instantiate stack. A reasonable default
              * value is 100.
@@ -58,12 +78,8 @@ declare module '@polkadot/api/types/consts' {
              **/
             signedClaimHandicap: BlockNumber & AugmentedConst<ApiType>;
             /**
-             * A size offset for an contract. A just created account with untouched storage will have that
-             * much of storage from the perspective of the state rent.
-             *
-             * This is a simple way to ensure that contracts with empty storage eventually get deleted
-             * by making them pay rent. This creates an incentive to remove them early in order to save
-             * rent.
+             * Size of a contract at the time of instantiation. This is a simple way to ensure that
+             * empty contracts eventually gets deleted.
              **/
             storageSizeOffset: u32 & AugmentedConst<ApiType>;
             /**
@@ -75,6 +91,14 @@ declare module '@polkadot/api/types/consts' {
              * The minimum amount required to generate a tombstone.
              **/
             tombstoneDeposit: BalanceOf & AugmentedConst<ApiType>;
+            /**
+             * The fee to be paid for making a transaction; the base.
+             **/
+            transactionBaseFee: BalanceOf & AugmentedConst<ApiType>;
+            /**
+             * The fee to be paid for making a transaction; the per-byte portion.
+             **/
+            transactionByteFee: BalanceOf & AugmentedConst<ApiType>;
         };
         finalityTracker: {
             /**
@@ -86,67 +110,11 @@ declare module '@polkadot/api/types/consts' {
              **/
             windowSize: BlockNumber & AugmentedConst<ApiType>;
         };
-        indices: {
-            /**
-             * The deposit needed for reserving an index.
-             **/
-            deposit: BalanceOf & AugmentedConst<ApiType>;
-        };
-        nicks: {
-            /**
-             * The maximum length a name may be.
-             **/
-            maxLength: u32 & AugmentedConst<ApiType>;
-            /**
-             * The minimum length a name may be.
-             **/
-            minLength: u32 & AugmentedConst<ApiType>;
-            /**
-             * Reservation fee.
-             **/
-            reservationFee: BalanceOf & AugmentedConst<ApiType>;
-        };
-        ovm: {
-            /**
-             * During the dispute period defined here, the user can challenge.
-             * If nothing is found, the state is determined after the dispute period.
-             **/
-            disputePeriod: BlockNumber & AugmentedConst<ApiType>;
-        };
-        plasma: {
-            maximumTokenAddress: AccountId & AugmentedConst<ApiType>;
-        };
         plasmRewards: {
             /**
              * Number of sessions per era.
              **/
             sessionsPerEra: SessionIndex & AugmentedConst<ApiType>;
-        };
-        system: {
-            /**
-             * The base weight of executing a block, independent of the transactions in the block.
-             **/
-            blockExecutionWeight: Weight & AugmentedConst<ApiType>;
-            /**
-             * The maximum number of blocks to allow in mortal eras.
-             **/
-            blockHashCount: BlockNumber & AugmentedConst<ApiType>;
-            /**
-             * The weight of runtime database operations the runtime can invoke.
-             **/
-            dbWeight: RuntimeDbWeight & AugmentedConst<ApiType>;
-            /**
-             * The base weight of an Extrinsic in the block, independent of the of extrinsic being executed.
-             **/
-            extrinsicBaseWeight: Weight & AugmentedConst<ApiType>;
-            /**
-             * The maximum length of a block (in bytes).
-             **/
-            maximumBlockLength: u32 & AugmentedConst<ApiType>;
-            /**
-             * The maximum weight of a block.
-             **/
-            maximumBlockWeight: Weight & AugmentedConst<ApiType>;
         };
         timestamp: {
             /**
@@ -159,13 +127,13 @@ declare module '@polkadot/api/types/consts' {
         };
         transactionPayment: {
             /**
+             * The fee to be paid for making a transaction; the base.
+             **/
+            transactionBaseFee: BalanceOf & AugmentedConst<ApiType>;
+            /**
              * The fee to be paid for making a transaction; the per-byte portion.
              **/
             transactionByteFee: BalanceOf & AugmentedConst<ApiType>;
-            /**
-             * The polynomial that is applied in order to derive fee from weight.
-             **/
-            weightToFee: Vec<WeightToFeeCoefficient> & AugmentedConst<ApiType>;
         };
     }
     interface QueryableConsts<ApiType extends ApiTypes> extends AugmentedConsts<ApiType> {
