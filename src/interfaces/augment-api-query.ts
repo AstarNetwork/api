@@ -3,22 +3,20 @@
 
 import type { Bytes, Option, Vec, bool, u32, u64 } from '@polkadot/types';
 import type { AnyNumber, ITuple, Observable } from '@polkadot/types/types';
-import type { EraStakingPoints, Parameters, StakingParameters, VoteCounts } from '@plasm/types/interfaces/dappsStaking';
-import type { ChallengeGameOf, PredicateContractOf, PredicateHash, PrefabOvmModule } from '@plasm/types/interfaces/ovm';
-import type { AuthorityVote, Claim, ClaimId, DollarRate } from '@plasm/types/interfaces/plasmLockdrop';
-import type { RangeOf } from '@plasm/types/interfaces/plasma';
-import type { OfferOf } from '@plasm/types/interfaces/trading';
 import type { UncleEntryItem } from '@polkadot/types/interfaces/authorship';
 import type { BabeAuthorityWeight, MaybeRandomness, NextConfigDescriptor, Randomness } from '@polkadot/types/interfaces/babe';
 import type { AccountData, BalanceLock } from '@polkadot/types/interfaces/balances';
 import type { AuthorityId } from '@polkadot/types/interfaces/consensus';
-import type { CodeHash, ContractInfo, PrefabWasmModule, Schedule } from '@polkadot/types/interfaces/contracts';
+import type { CodeHash, ContractInfo, DeletedContract, PrefabWasmModule, Schedule } from '@polkadot/types/interfaces/contracts';
 import type { EthBlock, EthReceipt, EthTransaction, EthTransactionStatus } from '@polkadot/types/interfaces/eth';
 import type { SetId, StoredPendingChange, StoredState } from '@polkadot/types/interfaces/grandpa';
-import type { AccountId, AccountIndex, Balance, BalanceOf, BlockNumber, ExtrinsicsWeight, H160, H256, Hash, KeyTypeId, Moment, Perbill, Releases, ValidatorId } from '@polkadot/types/interfaces/runtime';
+import type { AuthIndex } from '@polkadot/types/interfaces/imOnline';
+import type { DeferredOffenceOf, Kind, OffenceDetails, OpaqueTimeSlot, ReportIdOf } from '@polkadot/types/interfaces/offences';
+import type { AccountId, AccountIndex, Balance, BalanceOf, BlockNumber, H160, H256, Hash, KeyTypeId, Moment, Releases, Slot, ValidatorId } from '@polkadot/types/interfaces/runtime';
+import type { Scheduled, TaskAddress } from '@polkadot/types/interfaces/scheduler';
 import type { Keys, SessionIndex } from '@polkadot/types/interfaces/session';
-import type { ActiveEraInfo, EraIndex, Forcing, Nominations, RewardDestination, StakingLedger } from '@polkadot/types/interfaces/staking';
-import type { AccountInfo, DigestOf, EventIndex, EventRecord, LastRuntimeUpgradeInfo, Phase } from '@polkadot/types/interfaces/system';
+import type { ActiveEraInfo, EraIndex, Forcing } from '@polkadot/types/interfaces/staking';
+import type { AccountInfo, ConsumedWeight, DigestOf, EventIndex, EventRecord, LastRuntimeUpgradeInfo, Phase } from '@polkadot/types/interfaces/system';
 import type { Multiplier } from '@polkadot/types/interfaces/txpayment';
 import type { ApiTypes } from '@polkadot/api/types';
 
@@ -44,9 +42,15 @@ declare module '@polkadot/api/types/storage' {
        **/
       authorities: AugmentedQuery<ApiType, () => Observable<Vec<ITuple<[AuthorityId, BabeAuthorityWeight]>>>, []>;
       /**
+       * Temporary value (cleared at block finalization) that includes the VRF output generated
+       * at this block. This field should always be populated during block processing unless
+       * secondary plain slots are enabled (which don't contain a VRF output).
+       **/
+      authorVrfRandomness: AugmentedQuery<ApiType, () => Observable<MaybeRandomness>, []>;
+      /**
        * Current slot number.
        **/
-      currentSlot: AugmentedQuery<ApiType, () => Observable<u64>, []>;
+      currentSlot: AugmentedQuery<ApiType, () => Observable<Slot>, []>;
       /**
        * Current epoch index.
        **/
@@ -55,7 +59,7 @@ declare module '@polkadot/api/types/storage' {
        * The slot at which the first epoch actually started. This is 0
        * until the first block of the chain.
        **/
-      genesisSlot: AugmentedQuery<ApiType, () => Observable<u64>, []>;
+      genesisSlot: AugmentedQuery<ApiType, () => Observable<Slot>, []>;
       /**
        * Temporary value (cleared at block finalization) which is `Some`
        * if per-block initialization has already been called for current block.
@@ -69,6 +73,10 @@ declare module '@polkadot/api/types/storage' {
        * execution context should always yield zero.
        **/
       lateness: AugmentedQuery<ApiType, () => Observable<BlockNumber>, []>;
+      /**
+       * Next epoch authorities.
+       **/
+      nextAuthorities: AugmentedQuery<ApiType, () => Observable<Vec<ITuple<[AuthorityId, BabeAuthorityWeight]>>>, []>;
       /**
        * Next epoch configuration, if changed.
        **/
@@ -111,7 +119,7 @@ declare module '@polkadot/api/types/storage' {
       /**
        * The balance of an account.
        * 
-       * NOTE: This is only used in the case that this module is used to store balances.
+       * NOTE: This is only used in the case that this pallet is used to store balances.
        **/
       account: AugmentedQuery<ApiType, (arg: AccountId | string | Uint8Array) => Observable<AccountData>, [AccountId]>;
       /**
@@ -150,81 +158,16 @@ declare module '@polkadot/api/types/storage' {
        **/
       currentSchedule: AugmentedQuery<ApiType, () => Observable<Schedule>, []>;
       /**
+       * Evicted contracts that await child trie deletion.
+       * 
+       * Child trie deletion is a heavy operation depending on the amount of storage items
+       * stored in said trie. Therefore this operation is performed lazily in `on_initialize`.
+       **/
+      deletionQueue: AugmentedQuery<ApiType, () => Observable<Vec<DeletedContract>>, []>;
+      /**
        * A mapping from an original code hash to the original code, untouched by instrumentation.
        **/
       pristineCode: AugmentedQuery<ApiType, (arg: CodeHash | string | Uint8Array) => Observable<Option<Bytes>>, [CodeHash]>;
-    };
-    dappsStaking: {
-      /**
-       * Votes for pairs of an account and a contract
-       **/
-      accountsVote: AugmentedQueryDoubleMap<ApiType, (key1: AccountId | string | Uint8Array, key2: AccountId | string | Uint8Array) => Observable<VoteCounts>, [AccountId, AccountId]>;
-      /**
-       * Map from all locked "stash" accounts to the controller account.
-       **/
-      bonded: AugmentedQuery<ApiType, (arg: AccountId | string | Uint8Array) => Observable<Option<AccountId>>, [AccountId]>;
-      contractsUntreatedEra: AugmentedQuery<ApiType, (arg: AccountId | string | Uint8Array) => Observable<EraIndex>, [AccountId]>;
-      contractVotesUntreatedEra: AugmentedQuery<ApiType, (arg: AccountId | string | Uint8Array) => Observable<EraIndex>, [AccountId]>;
-      /**
-       * The map from nominator stash key to the set of stash keys of all contracts to nominate.
-       * 
-       * NOTE: is private so that we can ensure upgraded before all typical accesses.
-       * Direct storage APIs can still bypass this protection.
-       **/
-      dappsNominations: AugmentedQuery<ApiType, (arg: AccountId | string | Uint8Array) => Observable<Option<Nominations>>, [AccountId]>;
-      /**
-       * Similarly to `ErasStakers` this holds the parameters of contracts.
-       * 
-       * This is keyed first by the era index to allow bulk deletion and then the contracts account.
-       * 
-       * Is it removed after `HISTORY_DEPTH` eras.
-       **/
-      erasContractsParameters: AugmentedQueryDoubleMap<ApiType, (key1: EraIndex | AnyNumber | Uint8Array, key2: AccountId | string | Uint8Array) => Observable<Option<StakingParameters>>, [EraIndex, AccountId]>;
-      /**
-       * The total amounts of staking for each nominators
-       **/
-      erasNominateTotals: AugmentedQueryDoubleMap<ApiType, (key1: EraIndex | AnyNumber | Uint8Array, key2: AccountId | string | Uint8Array) => Observable<BalanceOf>, [EraIndex, AccountId]>;
-      /**
-       * Rewards of stakers for contracts(called by "Dapps Nominator") at era.
-       * 
-       * This is keyed first by the era index, 2nd keyed contract account to allow the stash account.
-       * Rewards for the last `HISTORY_DEPTH` eras.
-       * 
-       * If reward hasn't been set or has been removed then 0 reward is returned.
-       **/
-      erasStakingPoints: AugmentedQueryDoubleMap<ApiType, (key1: EraIndex | AnyNumber | Uint8Array, key2: AccountId | string | Uint8Array) => Observable<EraStakingPoints>, [EraIndex, AccountId]>;
-      /**
-       * The total amount staked for the last `HISTORY_DEPTH` eras.
-       * If total hasn't been set or has been removed then 0 stake is returned.
-       **/
-      erasTotalStake: AugmentedQuery<ApiType, (arg: EraIndex | AnyNumber | Uint8Array) => Observable<BalanceOf>, [EraIndex]>;
-      /**
-       * Votes for pairs of an era and a contract
-       **/
-      erasVotes: AugmentedQueryDoubleMap<ApiType, (key1: EraIndex | AnyNumber | Uint8Array, key2: AccountId | string | Uint8Array) => Observable<VoteCounts>, [EraIndex, AccountId]>;
-      /**
-       * Map from all (unlocked) "controller" accounts to the info regarding the staking.
-       **/
-      ledger: AugmentedQuery<ApiType, (arg: AccountId | string | Uint8Array) => Observable<Option<StakingLedger>>, [AccountId]>;
-      nominatorsUntreatedEra: AugmentedQuery<ApiType, (arg: AccountId | string | Uint8Array) => Observable<EraIndex>, [AccountId]>;
-      /**
-       * Where the reward payment should be made. Keyed by stash.
-       **/
-      payee: AugmentedQuery<ApiType, (arg: AccountId | string | Uint8Array) => Observable<RewardDestination>, [AccountId]>;
-      /**
-       * Storage version of the pallet.
-       * 
-       * This is set to v1.0.0 for new networks.
-       **/
-      storageVersion: AugmentedQuery<ApiType, () => Observable<Releases>, []>;
-      /**
-       * The total amounts of staking for pairs of nominator and contract
-       **/
-      totalStakes: AugmentedQueryDoubleMap<ApiType, (key1: AccountId | string | Uint8Array, key2: AccountId | string | Uint8Array) => Observable<BalanceOf>, [AccountId, AccountId]>;
-      /**
-       * The already untreated era is EraIndex.
-       **/
-      untreatedEra: AugmentedQuery<ApiType, () => Observable<EraIndex>, []>;
     };
     ethereum: {
       /**
@@ -278,6 +221,31 @@ declare module '@polkadot/api/types/storage' {
        **/
       state: AugmentedQuery<ApiType, () => Observable<StoredState>, []>;
     };
+    imOnline: {
+      /**
+       * For each session index, we keep a mapping of `ValidatorId<T>` to the
+       * number of blocks authored by the given authority.
+       **/
+      authoredBlocks: AugmentedQueryDoubleMap<ApiType, (key1: SessionIndex | AnyNumber | Uint8Array, key2: ValidatorId | string | Uint8Array) => Observable<u32>, [SessionIndex, ValidatorId]>;
+      /**
+       * The block number after which it's ok to send heartbeats in current session.
+       * 
+       * At the beginning of each session we set this to a value that should
+       * fall roughly in the middle of the session duration.
+       * The idea is to first wait for the validators to produce a block
+       * in the current session, so that the heartbeat later on will not be necessary.
+       **/
+      heartbeatAfter: AugmentedQuery<ApiType, () => Observable<BlockNumber>, []>;
+      /**
+       * The current set of keys that may issue a heartbeat.
+       **/
+      keys: AugmentedQuery<ApiType, () => Observable<Vec<AuthorityId>>, []>;
+      /**
+       * For each session index, we keep a mapping of `AuthIndex` to
+       * `offchain::OpaqueNetworkState`.
+       **/
+      receivedHeartbeats: AugmentedQueryDoubleMap<ApiType, (key1: SessionIndex | AnyNumber | Uint8Array, key2: AuthIndex | AnyNumber | Uint8Array) => Observable<Option<Bytes>>, [SessionIndex, AuthIndex]>;
+    };
     indices: {
       /**
        * The lookup from index to account.
@@ -290,131 +258,29 @@ declare module '@polkadot/api/types/storage' {
        **/
       nameOf: AugmentedQuery<ApiType, (arg: AccountId | string | Uint8Array) => Observable<Option<ITuple<[Bytes, BalanceOf]>>>, [AccountId]>;
     };
-    operator: {
+    offences: {
       /**
-       * A mapping from operated contract by operator to it.
+       * A vector of reports of the same kind that happened at the same time slot.
        **/
-      contractHasOperator: AugmentedQuery<ApiType, (arg: AccountId | string | Uint8Array) => Observable<Option<AccountId>>, [AccountId]>;
+      concurrentReportsIndex: AugmentedQueryDoubleMap<ApiType, (key1: Kind | string | Uint8Array, key2: OpaqueTimeSlot | string | Uint8Array) => Observable<Vec<ReportIdOf>>, [Kind, OpaqueTimeSlot]>;
       /**
-       * A mapping from contract to it's parameters.
+       * Deferred reports that have been rejected by the offence handler and need to be submitted
+       * at a later time.
        **/
-      contractParameters: AugmentedQuery<ApiType, (arg: AccountId | string | Uint8Array) => Observable<Option<Parameters>>, [AccountId]>;
+      deferredOffences: AugmentedQuery<ApiType, () => Observable<Vec<DeferredOffenceOf>>, []>;
       /**
-       * A mapping from operators to operated contracts by them.
+       * The primary structure that holds all offence records keyed by report identifiers.
        **/
-      operatorHasContracts: AugmentedQuery<ApiType, (arg: AccountId | string | Uint8Array) => Observable<Vec<AccountId>>, [AccountId]>;
-    };
-    ovm: {
+      reports: AugmentedQuery<ApiType, (arg: ReportIdOf | string | Uint8Array) => Observable<Option<OffenceDetails>>, [ReportIdOf]>;
       /**
-       * Current cost schedule for contracts.
+       * Enumerates all reports of a kind along with the time they happened.
+       * 
+       * All reports are sorted by the time of offence.
+       * 
+       * Note that the actual type of this mapping is `Vec<u8>`, this is because values of
+       * different types are not supported at the moment so we are doing the manual serialization.
        **/
-      currentSchedule: AugmentedQuery<ApiType, () => Observable<Schedule>, []>;
-      /**
-       * Mapping the game id to Challenge Game.
-       **/
-      games: AugmentedQuery<ApiType, (arg: Hash | string | Uint8Array) => Observable<Option<ChallengeGameOf>>, [Hash]>;
-      /**
-       * A mapping between an original code hash and instrumented ovm(predicate) code, ready for execution.
-       **/
-      predicateCache: AugmentedQuery<ApiType, (arg: PredicateHash | string | Uint8Array) => Observable<Option<PrefabOvmModule>>, [PredicateHash]>;
-      /**
-       * A mapping from an original code hash to the original code, untouched by instrumentation.
-       **/
-      predicateCodes: AugmentedQuery<ApiType, (arg: PredicateHash | string | Uint8Array) => Observable<Option<Bytes>>, [PredicateHash]>;
-      /**
-       * Mapping the predicate address to Predicate.
-       * Predicate is handled similar to contracts.
-       **/
-      predicates: AugmentedQuery<ApiType, (arg: AccountId | string | Uint8Array) => Observable<Option<PredicateContractOf>>, [AccountId]>;
-    };
-    plasma: {
-      /**
-       * Single aggregator address: AggregatorId
-       **/
-      aggregatorAddress: AugmentedQuery<ApiType, (arg: AccountId | string | Uint8Array) => Observable<AccountId>, [AccountId]>;
-      /**
-       * History of Merkle Root
-       **/
-      blocks: AugmentedQueryDoubleMap<ApiType, (key1: AccountId | string | Uint8Array, key2: BlockNumber | AnyNumber | Uint8Array) => Observable<Hash>, [AccountId, BlockNumber]>;
-      /**
-       * Range's Checkpoints.
-       **/
-      checkpoints: AugmentedQueryDoubleMap<ApiType, (key1: AccountId | string | Uint8Array, key2: Hash | string | Uint8Array) => Observable<bool>, [AccountId, Hash]>;
-      /**
-       * Current block number of commitment chain: BlockNumber
-       **/
-      currentBlock: AugmentedQuery<ApiType, (arg: AccountId | string | Uint8Array) => Observable<BlockNumber>, [AccountId]>;
-      /**
-       * DepositedRanges are currently deposited ranges.
-       **/
-      depositedRanges: AugmentedQueryDoubleMap<ApiType, (key1: AccountId | string | Uint8Array, key2: BalanceOf | AnyNumber | Uint8Array) => Observable<RangeOf>, [AccountId, BalanceOf]>;
-      /**
-       * mapping from Plapps address to ERC20 based contract address.
-       **/
-      erc20: AugmentedQuery<ApiType, (arg: AccountId | string | Uint8Array) => Observable<AccountId>, [AccountId]>;
-      /**
-       * mapping from Plapps address to ExitDeposit predicate address.
-       **/
-      exitDepositPredicate: AugmentedQuery<ApiType, (arg: AccountId | string | Uint8Array) => Observable<AccountId>, [AccountId]>;
-      /**
-       * mapping from Plapps address to Exit predicate address.
-       **/
-      exitPredicate: AugmentedQuery<ApiType, (arg: AccountId | string | Uint8Array) => Observable<AccountId>, [AccountId]>;
-      /**
-       * predicate address => payout address
-       **/
-      payout: AugmentedQuery<ApiType, (arg: AccountId | string | Uint8Array) => Observable<AccountId>, [AccountId]>;
-      /**
-       * mapping from Plapps address to StateUpdate predicate address.
-       **/
-      stateUpdatePredicate: AugmentedQuery<ApiType, (arg: AccountId | string | Uint8Array) => Observable<AccountId>, [AccountId]>;
-      /**
-       * TotalDeposited is the most right coin id which has been deposited.
-       **/
-      totalDeposited: AugmentedQuery<ApiType, (arg: AccountId | string | Uint8Array) => Observable<BalanceOf>, [AccountId]>;
-    };
-    plasmLockdrop: {
-      /**
-       * Lockdrop alpha parameter, where α ∈ [0; 1]
-       **/
-      alpha: AugmentedQuery<ApiType, () => Observable<Perbill>, []>;
-      /**
-       * Token claim requests.
-       **/
-      claims: AugmentedQuery<ApiType, (arg: ClaimId | string | Uint8Array) => Observable<Claim>, [ClaimId]>;
-      /**
-       * Lockdrop dollar rate parameter: BTC, ETH.
-       **/
-      dollarRate: AugmentedQuery<ApiType, () => Observable<ITuple<[DollarRate, DollarRate]>>, []>;
-      /**
-       * Lockdrop dollar rate median filter table: Time, BTC, ETH.
-       **/
-      dollarRateF: AugmentedQuery<ApiType, (arg: AuthorityId | string | Uint8Array) => Observable<ITuple<[Moment, DollarRate, DollarRate]>>, [AuthorityId]>;
-      /**
-       * Double vote prevention registry.
-       **/
-      hasVote: AugmentedQueryDoubleMap<ApiType, (key1: AuthorityId | string | Uint8Array, key2: ClaimId | string | Uint8Array) => Observable<bool>, [AuthorityId, ClaimId]>;
-      /**
-       * List of lockdrop authority id's.
-       **/
-      keys: AugmentedQuery<ApiType, () => Observable<Vec<AuthorityId>>, []>;
-      /**
-       * Timestamp bounds of lockdrop held period.
-       **/
-      lockdropBounds: AugmentedQuery<ApiType, () => Observable<ITuple<[BlockNumber, BlockNumber]>>, []>;
-      /**
-       * How much positive votes requered to approve claim.
-       * Positive votes = approve votes - decline votes.
-       **/
-      positiveVotes: AugmentedQuery<ApiType, () => Observable<AuthorityVote>, []>;
-      /**
-       * Offchain lock check requests made within this block execution.
-       **/
-      requests: AugmentedQuery<ApiType, () => Observable<Vec<ClaimId>>, []>;
-      /**
-       * How much authority votes module should receive to decide claim result.
-       **/
-      voteThreshold: AugmentedQuery<ApiType, () => Observable<AuthorityVote>, []>;
+      reportsByKindIndex: AugmentedQuery<ApiType, (arg: Kind | string | Uint8Array) => Observable<Bytes>, [Kind]>;
     };
     plasmRewards: {
       /**
@@ -498,6 +364,22 @@ declare module '@polkadot/api/types/storage' {
        **/
       randomMaterial: AugmentedQuery<ApiType, () => Observable<Vec<Hash>>, []>;
     };
+    scheduler: {
+      /**
+       * Items to be executed, indexed by the block number that they should be executed on.
+       **/
+      agenda: AugmentedQuery<ApiType, (arg: BlockNumber | AnyNumber | Uint8Array) => Observable<Vec<Option<Scheduled>>>, [BlockNumber]>;
+      /**
+       * Lookup from identity to the block number and index of the task.
+       **/
+      lookup: AugmentedQuery<ApiType, (arg: Bytes | string | Uint8Array) => Observable<Option<TaskAddress>>, [Bytes]>;
+      /**
+       * Storage version of the pallet.
+       * 
+       * New networks start with last version.
+       **/
+      storageVersion: AugmentedQuery<ApiType, () => Observable<Releases>, []>;
+    };
     session: {
       /**
        * Current index of the session.
@@ -554,7 +436,7 @@ declare module '@polkadot/api/types/storage' {
       /**
        * The current weight for the block.
        **/
-      blockWeight: AugmentedQuery<ApiType, () => Observable<ExtrinsicsWeight>, []>;
+      blockWeight: AugmentedQuery<ApiType, () => Observable<ConsumedWeight>, []>;
       /**
        * Digest of the current block, also part of the block header.
        **/
@@ -593,10 +475,6 @@ declare module '@polkadot/api/types/storage' {
        **/
       extrinsicData: AugmentedQuery<ApiType, (arg: u32 | AnyNumber | Uint8Array) => Observable<Bytes>, [u32]>;
       /**
-       * Extrinsics root of the current block, also part of the block header.
-       **/
-      extrinsicsRoot: AugmentedQuery<ApiType, () => Observable<Hash>, []>;
-      /**
        * Stores the `spec_version` and `spec_name` of when the last runtime upgrade happened.
        **/
       lastRuntimeUpgrade: AugmentedQuery<ApiType, () => Observable<Option<LastRuntimeUpgradeInfo>>, []>;
@@ -608,6 +486,11 @@ declare module '@polkadot/api/types/storage' {
        * Hash of the previous block.
        **/
       parentHash: AugmentedQuery<ApiType, () => Observable<Hash>, []>;
+      /**
+       * True if we have upgraded so that AccountInfo contains two types of `RefCount`. False
+       * (default) if not.
+       **/
+      upgradedToDualRefCount: AugmentedQuery<ApiType, () => Observable<bool>, []>;
       /**
        * True if we have upgraded so that `type RefCount` is `u32`. False (default) if not.
        **/
@@ -622,12 +505,6 @@ declare module '@polkadot/api/types/storage' {
        * Current time for the current block.
        **/
       now: AugmentedQuery<ApiType, () => Observable<Moment>, []>;
-    };
-    trading: {
-      /**
-       * A mapping from the offering account id to Offer
-       **/
-      offers: AugmentedQuery<ApiType, (arg: AccountId | string | Uint8Array) => Observable<Option<OfferOf>>, [AccountId]>;
     };
     transactionPayment: {
       nextFeeMultiplier: AugmentedQuery<ApiType, () => Observable<Multiplier>, []>;

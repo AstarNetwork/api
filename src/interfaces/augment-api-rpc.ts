@@ -11,11 +11,12 @@ import type { PrefixedStorageKey } from '@polkadot/types/interfaces/childstate';
 import type { AuthorityId } from '@polkadot/types/interfaces/consensus';
 import type { ContractCallRequest, ContractExecResult } from '@polkadot/types/interfaces/contracts';
 import type { CreatedBlock } from '@polkadot/types/interfaces/engine';
-import type { EthAccount, EthCallRequest, EthFilter, EthLog, EthReceipt, EthRichBlock, EthSubKind, EthSubParams, EthSyncStatus, EthTransaction, EthTransactionRequest, EthWork } from '@polkadot/types/interfaces/eth';
+import type { EthAccount, EthCallRequest, EthFilter, EthFilterChanges, EthLog, EthReceipt, EthRichBlock, EthSubKind, EthSubParams, EthSyncStatus, EthTransaction, EthTransactionRequest, EthWork } from '@polkadot/types/interfaces/eth';
 import type { Extrinsic } from '@polkadot/types/interfaces/extrinsics';
 import type { EncodedFinalityProofs, JustificationNotification, ReportedRoundStates } from '@polkadot/types/interfaces/grandpa';
+import type { MmrLeafProof } from '@polkadot/types/interfaces/mmr';
 import type { StorageKind } from '@polkadot/types/interfaces/offchain';
-import type { RuntimeDispatchInfo } from '@polkadot/types/interfaces/payment';
+import type { FeeDetails, RuntimeDispatchInfo } from '@polkadot/types/interfaces/payment';
 import type { RpcMethods } from '@polkadot/types/interfaces/rpc';
 import type { AccountId, BlockNumber, H160, H256, H64, Hash, Header, Index, Justification, KeyValue, SignedBlock, StorageData } from '@polkadot/types/interfaces/runtime';
 import type { ReadProof, RuntimeVersion } from '@polkadot/types/interfaces/state';
@@ -133,7 +134,7 @@ declare module '@polkadot/rpc-core/types.jsonrpc' {
       /**
        * Instructs the manual-seal authorship task to finalize a block
        **/
-      finalizeBlock: AugmentedRpc<(hash: BlockHash | string | Uint8Array, justification?: Justification | string | Uint8Array) => Observable<bool>>;
+      finalizeBlock: AugmentedRpc<(hash: BlockHash | string | Uint8Array, justification?: Justification) => Observable<bool>>;
     };
     eth: {
       /**
@@ -188,6 +189,14 @@ declare module '@polkadot/rpc-core/types.jsonrpc' {
        * Returns the code at given address at given time (block number).
        **/
       getCode: AugmentedRpc<(address: H160 | string | Uint8Array, number?: BlockNumber | AnyNumber | Uint8Array) => Observable<Bytes>>;
+      /**
+       * Returns filter changes since last poll.
+       **/
+      getFilterChanges: AugmentedRpc<(index: U256 | AnyNumber | Uint8Array) => Observable<EthFilterChanges>>;
+      /**
+       * Returns all logs matching given filter (in a range 'from' - 'to').
+       **/
+      getFilterLogs: AugmentedRpc<(index: U256 | AnyNumber | Uint8Array) => Observable<Vec<EthLog>>>;
       /**
        * Returns logs matching given filter object.
        **/
@@ -249,6 +258,18 @@ declare module '@polkadot/rpc-core/types.jsonrpc' {
        **/
       mining: AugmentedRpc<() => Observable<bool>>;
       /**
+       * Returns id of new block filter.
+       **/
+      newBlockFilter: AugmentedRpc<() => Observable<U256>>;
+      /**
+       * Returns id of new filter.
+       **/
+      newFilter: AugmentedRpc<(filter: EthFilter | { fromBlock?: any; toBlock?: any; blockHash?: any; address?: any; topics?: any } | string | Uint8Array) => Observable<U256>>;
+      /**
+       * Returns id of new block filter.
+       **/
+      newPendingTransactionFilter: AugmentedRpc<() => Observable<U256>>;
+      /**
        * Returns protocol version encoded as a string (quotes are necessary).
        **/
       protocolVersion: AugmentedRpc<() => Observable<u64>>;
@@ -276,6 +297,10 @@ declare module '@polkadot/rpc-core/types.jsonrpc' {
        * Returns an object with data about the sync status or false.
        **/
       syncing: AugmentedRpc<() => Observable<EthSyncStatus>>;
+      /**
+       * Uninstalls filter.
+       **/
+      uninstallFilter: AugmentedRpc<(index: U256 | AnyNumber | Uint8Array) => Observable<bool>>;
     };
     grandpa: {
       /**
@@ -290,6 +315,12 @@ declare module '@polkadot/rpc-core/types.jsonrpc' {
        * Subscribes to grandpa justifications
        **/
       subscribeJustifications: AugmentedRpc<() => Observable<JustificationNotification>>;
+    };
+    mmr: {
+      /**
+       * Generate MMR proof for given leaf index.
+       **/
+      generateProof: AugmentedRpc<(leafIndex: u64 | AnyNumber | Uint8Array, at?: BlockHash | string | Uint8Array) => Observable<MmrLeafProof>>;
     };
     net: {
       /**
@@ -309,13 +340,17 @@ declare module '@polkadot/rpc-core/types.jsonrpc' {
       /**
        * Get offchain local storage under given key and prefix
        **/
-      localStorageGet: AugmentedRpc<(kind: StorageKind | '__UNUSED' | 'PERSISTENT' | 'LOCAL' | number | Uint8Array, key: Bytes | string | Uint8Array) => Observable<Option<Bytes>>>;
+      localStorageGet: AugmentedRpc<(kind: StorageKind | 'PERSISTENT' | 'LOCAL' | number | Uint8Array, key: Bytes | string | Uint8Array) => Observable<Option<Bytes>>>;
       /**
        * Set offchain local storage under given key and prefix
        **/
-      localStorageSet: AugmentedRpc<(kind: StorageKind | '__UNUSED' | 'PERSISTENT' | 'LOCAL' | number | Uint8Array, key: Bytes | string | Uint8Array, value: Bytes | string | Uint8Array) => Observable<Null>>;
+      localStorageSet: AugmentedRpc<(kind: StorageKind | 'PERSISTENT' | 'LOCAL' | number | Uint8Array, key: Bytes | string | Uint8Array, value: Bytes | string | Uint8Array) => Observable<Null>>;
     };
     payment: {
+      /**
+       * Query the detailed fee of a given encoded extrinsic
+       **/
+      queryFeeDetails: AugmentedRpc<(extrinsic: Bytes | string | Uint8Array, at?: BlockHash | string | Uint8Array) => Observable<FeeDetails>>;
       /**
        * Retrieves the fee information for an encoded extrinsic
        **/

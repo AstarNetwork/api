@@ -1,14 +1,12 @@
-import type { Bytes, U256, Vec, bool, u32 } from '@polkadot/types';
-import type { Parameters } from '@plasm/types/interfaces/dappsStaking';
-import type { Property } from '@plasm/types/interfaces/ovm';
-import type { ClaimId, DollarRate } from '@plasm/types/interfaces/plasmLockdrop';
-import type { Checkpoint, Range } from '@plasm/types/interfaces/plasma';
+import type { Bytes, Option, U256, Vec, bool, u32 } from '@polkadot/types';
 import type { BalanceStatus } from '@polkadot/types/interfaces/balances';
 import type { AuthorityId } from '@polkadot/types/interfaces/consensus';
-import type { EvmLog } from '@polkadot/types/interfaces/evm';
+import type { EvmLog, ExitReason } from '@polkadot/types/interfaces/evm';
 import type { AuthorityList } from '@polkadot/types/interfaces/grandpa';
+import type { Kind, OpaqueTimeSlot } from '@polkadot/types/interfaces/offences';
 import type { AccountId, AccountIndex, Balance, BlockNumber, H160, H256, Hash } from '@polkadot/types/interfaces/runtime';
-import type { SessionIndex } from '@polkadot/types/interfaces/session';
+import type { TaskAddress } from '@polkadot/types/interfaces/scheduler';
+import type { IdentificationTuple, SessionIndex } from '@polkadot/types/interfaces/session';
 import type { EraIndex } from '@polkadot/types/interfaces/staking';
 import type { DispatchError, DispatchInfo, DispatchResult } from '@polkadot/types/interfaces/system';
 import type { ApiTypes } from '@polkadot/api/types';
@@ -53,81 +51,83 @@ declare module '@polkadot/api/types/events' {
         };
         contracts: {
             /**
-             * Code with the specified hash has been stored.
+             * A code with the specified hash was removed.
              * \[code_hash\]
+             *
+             * This happens when the last contract that uses this code hash was removed or evicted.
+             **/
+            CodeRemoved: AugmentedEvent<ApiType, [Hash]>;
+            /**
+             * Code with the specified hash has been stored. \[code_hash\]
              **/
             CodeStored: AugmentedEvent<ApiType, [Hash]>;
             /**
-             * An event deposited upon execution of a contract from the account.
-             * \[account, data\]
-             **/
-            ContractExecution: AugmentedEvent<ApiType, [AccountId, Bytes]>;
-            /**
-             * Contract has been evicted and is now in tombstone state.
-             * \[contract, tombstone\]
+             * A custom event emitted by the contract.
+             * \[contract, data\]
              *
              * # Params
              *
-             * - `contract`: `AccountId`: The account ID of the evicted contract.
-             * - `tombstone`: `bool`: True if the evicted contract left behind a tombstone.
+             * - `contract`: The contract that emitted the event.
+             * - `data`: Data supplied by the contract. Metadata generated during contract
+             * compilation is needed to decode it.
              **/
-            Evicted: AugmentedEvent<ApiType, [AccountId, bool]>;
+            ContractEmitted: AugmentedEvent<ApiType, [AccountId, Bytes]>;
             /**
-             * Contract deployed by address at the specified address. \[owner, contract\]
+             * Contract has been evicted and is now in tombstone state. \[contract\]
+             **/
+            Evicted: AugmentedEvent<ApiType, [AccountId]>;
+            /**
+             * Contract deployed by address at the specified address. \[deployer, contract\]
              **/
             Instantiated: AugmentedEvent<ApiType, [AccountId, AccountId]>;
             /**
-             * Restoration for a contract has been successful.
-             * \[donor, dest, code_hash, rent_allowance\]
+             * Restoration of a contract has been successful.
+             * \[restorer, dest, code_hash, rent_allowance\]
              *
              * # Params
              *
-             * - `donor`: `AccountId`: Account ID of the restoring contract
-             * - `dest`: `AccountId`: Account ID of the restored contract
-             * - `code_hash`: `Hash`: Code hash of the restored contract
-             * - `rent_allowance: `Balance`: Rent allowance of the restored contract
+             * - `restorer`: Account ID of the restoring contract.
+             * - `dest`: Account ID of the restored contract.
+             * - `code_hash`: Code hash of the restored contract.
+             * - `rent_allowance`: Rent allowance of the restored contract.
              **/
             Restored: AugmentedEvent<ApiType, [AccountId, AccountId, Hash, Balance]>;
             /**
-             * Triggered when the current \[schedule\] is updated.
+             * Triggered when the current schedule is updated.
+             * \[version\]
+             *
+             * # Params
+             *
+             * - `version`: The version of the newly set schedule.
              **/
             ScheduleUpdated: AugmentedEvent<ApiType, [u32]>;
-        };
-        dappsStaking: {
             /**
-             * An account has bonded this amount.
+             * Contract has been terminated without leaving a tombstone.
+             * \[contract, beneficiary\]
              *
-             * NOTE: This event is only emitted when funds are bonded via a dispatchable. Notably,
-             * it will not be emitted for staking rewards when they are added to stake.
+             * # Params
+             *
+             * - `contract`: The contract that was terminated.
+             * - `beneficiary`: The account that received the contracts remaining balance.
+             *
+             * # Note
+             *
+             * The only way for a contract to be removed without a tombstone and emitting
+             * this event is by calling `seal_terminate`.
              **/
-            Bonded: AugmentedEvent<ApiType, [AccountId, Balance]>;
+            Terminated: AugmentedEvent<ApiType, [AccountId, AccountId]>;
+        };
+        ethCall: {
             /**
-             * Nominate of stash address.
+             * A call just executed. \[result\]
              **/
-            Nominate: AugmentedEvent<ApiType, [AccountId]>;
-            /**
-             * The amount of minted rewards. (for dapps with nominators)
-             **/
-            Reward: AugmentedEvent<ApiType, [Balance, Balance]>;
-            /**
-             * The total amount of minted rewards for dapps.
-             **/
-            TotalDappsRewards: AugmentedEvent<ApiType, [EraIndex, Balance]>;
-            /**
-             * An account has unbonded this amount.
-             **/
-            Unbonded: AugmentedEvent<ApiType, [AccountId, Balance]>;
-            /**
-             * An account has called `withdraw_unbonded` and removed unbonding chunks worth `Balance`
-             * from the unlocking queue.
-             **/
-            Withdrawn: AugmentedEvent<ApiType, [AccountId, Balance]>;
+            Executed: AugmentedEvent<ApiType, [AccountId, DispatchResult]>;
         };
         ethereum: {
             /**
-             * An ethereum transaction was successfully executed. [from, transaction_hash]
+             * An ethereum transaction was successfully executed. [from, to/contract_address, transaction_hash, exit_reason]
              **/
-            Executed: AugmentedEvent<ApiType, [H160, H256]>;
+            Executed: AugmentedEvent<ApiType, [H160, H160, H256, ExitReason]>;
         };
         evm: {
             /**
@@ -173,9 +173,23 @@ declare module '@polkadot/api/types/events' {
              **/
             Resumed: AugmentedEvent<ApiType, []>;
         };
+        imOnline: {
+            /**
+             * At the end of the session, no offence was committed.
+             **/
+            AllGood: AugmentedEvent<ApiType, []>;
+            /**
+             * A new heartbeat was received from `AuthorityId` \[authority_id\]
+             **/
+            HeartbeatReceived: AugmentedEvent<ApiType, [AuthorityId]>;
+            /**
+             * At the end of the session, at least one validator was found to be \[offline\].
+             **/
+            SomeOffline: AugmentedEvent<ApiType, [Vec<IdentificationTuple>]>;
+        };
         indices: {
             /**
-             * A account index was assigned. \[who, index\]
+             * A account index was assigned. \[index, who\]
              **/
             IndexAssigned: AugmentedEvent<ApiType, [AccountId, AccountIndex]>;
             /**
@@ -183,7 +197,7 @@ declare module '@polkadot/api/types/events' {
              **/
             IndexFreed: AugmentedEvent<ApiType, [AccountIndex]>;
             /**
-             * A account index has been frozen to its current account ID. \[who, index\]
+             * A account index has been frozen to its current account ID. \[index, who\]
              **/
             IndexFrozen: AugmentedEvent<ApiType, [AccountIndex, AccountId]>;
         };
@@ -209,91 +223,14 @@ declare module '@polkadot/api/types/events' {
              **/
             NameSet: AugmentedEvent<ApiType, [AccountId]>;
         };
-        operator: {
+        offences: {
             /**
-             * When operator changed,
-             * it is issued that 1-st Operator AccountId and 2-nd Contract AccountId.
+             * There is an offence reported of the given `kind` happened at the `session_index` and
+             * (kind-specific) time slot. This event is not deposited for duplicate slashes. last
+             * element indicates of the offence was applied (true) or queued (false)
+             * \[kind, timeslot, applied\].
              **/
-            SetOperator: AugmentedEvent<ApiType, [AccountId, AccountId]>;
-            /**
-             * When contract's parameters changed,
-             * it is issued that 1-st Contract AccountId and 2-nd the contract's new parameters.
-             **/
-            SetParameters: AugmentedEvent<ApiType, [AccountId, Parameters]>;
-        };
-        ovm: {
-            /**
-             * (game_id: Hash, challengeGameId: Hash)
-             **/
-            ChallengeRemoved: AugmentedEvent<ApiType, [Hash, Hash]>;
-            /**
-             * (predicate_address: AccountId);
-             **/
-            InstantiatePredicate: AugmentedEvent<ApiType, [AccountId]>;
-            /**
-             * (gameId: Hash, challenge_game_id: Hash)
-             **/
-            PropertyChallenged: AugmentedEvent<ApiType, [Hash, Hash]>;
-            /**
-             * (game_id: Hash, property: Property, created_block: BlockNumber)
-             **/
-            PropertyClaimed: AugmentedEvent<ApiType, [Hash, Property, BlockNumber]>;
-            /**
-             * (game_id: Hash, decision: bool)
-             **/
-            PropertyDecided: AugmentedEvent<ApiType, [Hash, bool]>;
-            /**
-             * (predicate_address: AccountId);
-             **/
-            PutPredicate: AugmentedEvent<ApiType, [Hash]>;
-        };
-        plasma: {
-            /**
-             * Event definitions (AccountID: PlappsAddress, BlockNumber, Hash: root)
-             **/
-            BlockSubmitted: AugmentedEvent<ApiType, [AccountId, BlockNumber, Hash]>;
-            /**
-             * (AccountID: PlappsAddress, checkpointId: Hash, checkpoint: Checkpoint);
-             **/
-            CheckpointFinalized: AugmentedEvent<ApiType, [AccountId, Hash, Checkpoint]>;
-            /**
-             * Deplpoyed Plapps. (creator: AccountId, plapps_id: AccountId)
-             **/
-            Deploy: AugmentedEvent<ApiType, [AccountId, AccountId]>;
-            /**
-             * (AccountID: PlappsAddress, new_range: Range)
-             **/
-            DepositedRangeExtended: AugmentedEvent<ApiType, [AccountId, Range]>;
-            /**
-             * (AccountID: PlappsAddress, removed_range: Range)
-             **/
-            DepositedRangeRemoved: AugmentedEvent<ApiType, [AccountId, Range]>;
-            /**
-             * (AccountID: PlappsAddress, exit_id: Hash)
-             **/
-            ExitFinalized: AugmentedEvent<ApiType, [AccountId, Hash]>;
-        };
-        plasmLockdrop: {
-            /**
-             * Lockdrop token claim paid
-             **/
-            ClaimComplete: AugmentedEvent<ApiType, [ClaimId, AccountId, Balance]>;
-            /**
-             * Lockdrop token claims requested by user
-             **/
-            ClaimRequest: AugmentedEvent<ApiType, [ClaimId]>;
-            /**
-             * Lockdrop token claims response by authority
-             **/
-            ClaimResponse: AugmentedEvent<ApiType, [ClaimId, AuthorityId, bool]>;
-            /**
-             * New authority list registered
-             **/
-            NewAuthorities: AugmentedEvent<ApiType, [Vec<AuthorityId>]>;
-            /**
-             * Dollar rate updated by oracle: BTC, ETH.
-             **/
-            NewDollarRate: AugmentedEvent<ApiType, [DollarRate, DollarRate]>;
+            Offence: AugmentedEvent<ApiType, [Kind, OpaqueTimeSlot, bool]>;
         };
         plasmRewards: {
             /**
@@ -316,6 +253,20 @@ declare module '@polkadot/api/types/events' {
              **/
             ValidatorReward: AugmentedEvent<ApiType, [EraIndex, AccountId, Balance]>;
         };
+        scheduler: {
+            /**
+             * Canceled some task. \[when, index\]
+             **/
+            Canceled: AugmentedEvent<ApiType, [BlockNumber, u32]>;
+            /**
+             * Dispatched some task. \[task, id, result\]
+             **/
+            Dispatched: AugmentedEvent<ApiType, [TaskAddress, Option<Bytes>, DispatchResult]>;
+            /**
+             * Scheduled some task. \[when, index\]
+             **/
+            Scheduled: AugmentedEvent<ApiType, [BlockNumber, u32]>;
+        };
         session: {
             /**
              * New session has happened. Note that the argument is the \[session_index\], not the block
@@ -335,7 +286,7 @@ declare module '@polkadot/api/types/events' {
             /**
              * A sudo just took place. \[result\]
              **/
-            SudoAsDone: AugmentedEvent<ApiType, [bool]>;
+            SudoAsDone: AugmentedEvent<ApiType, [DispatchResult]>;
         };
         system: {
             /**
@@ -358,35 +309,6 @@ declare module '@polkadot/api/types/events' {
              * A new \[account\] was created.
              **/
             NewAccount: AugmentedEvent<ApiType, [AccountId]>;
-        };
-        trading: {
-            /**
-             * When call reject,
-             * it is issued arguments:
-             * 1: Acceptor account id(current operator and sender)
-             * 2: Offer account id
-             **/
-            Accept: AugmentedEvent<ApiType, [AccountId, AccountId]>;
-            /**
-             * When call offer,
-             * it is issued arguments:
-             * 1: New Operator(buyer)
-             * 2: Current Operator(sender)
-             **/
-            Offer: AugmentedEvent<ApiType, [AccountId, AccountId]>;
-            /**
-             * When call reject,
-             * it is issued arguments:
-             * 1: Rejector account id(current operator and sender)
-             * 2: Offer account id
-             **/
-            Reject: AugmentedEvent<ApiType, [AccountId, AccountId]>;
-            /**
-             * When call remove,
-             * it is issued arguments:
-             * 1: the remover
-             **/
-            Remove: AugmentedEvent<ApiType, [AccountId]>;
         };
         utility: {
             /**

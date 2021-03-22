@@ -82,9 +82,17 @@ declare module '@polkadot/api/types/errors' {
        **/
       CodeNotFound: AugmentedError<ApiType>;
       /**
-       * The code supplied to `put_code` exceeds the limit specified in the current schedule.
+       * The code supplied to `instantiate_with_code` exceeds the limit specified in the
+       * current schedule.
        **/
       CodeTooLarge: AugmentedError<ApiType>;
+      /**
+       * A contract could not be evicted because it has enough balance to pay rent.
+       * 
+       * This can be returned from [`Pallet::claim_surcharge`] because the target
+       * contract has enough balance to pay for its rent.
+       **/
+      ContractNotEvictable: AugmentedError<ApiType>;
       /**
        * Contract trapped during execution.
        **/
@@ -93,6 +101,26 @@ declare module '@polkadot/api/types/errors' {
        * Input passed to a contract API function failed to decode as expected type.
        **/
       DecodingFailed: AugmentedError<ApiType>;
+      /**
+       * Removal of a contract failed because the deletion queue is full.
+       * 
+       * This can happen when either calling [`Pallet::claim_surcharge`] or `seal_terminate`.
+       * The queue is filled by deleting contracts and emptied by a fixed amount each block.
+       * Trying again during another block is the only way to resolve this issue.
+       **/
+      DeletionQueueFull: AugmentedError<ApiType>;
+      /**
+       * A contract with the same AccountId already exists.
+       **/
+      DuplicateContract: AugmentedError<ApiType>;
+      /**
+       * The topics passed to `seal_deposit_events` contains at least one duplicate.
+       **/
+      DuplicateTopics: AugmentedError<ApiType>;
+      /**
+       * `seal_input` was called twice from the same contract execution context.
+       **/
+      InputAlreadyRead: AugmentedError<ApiType>;
       /**
        * An origin TrieId written in the current block.
        **/
@@ -128,6 +156,12 @@ declare module '@polkadot/api/types/errors' {
        **/
       NewContractNotFunded: AugmentedError<ApiType>;
       /**
+       * The chain does not provide a chain extension. Calling the chain extension results
+       * in this error. Note that this usually  shouldn't happen as deploying such contracts
+       * is rejected.
+       **/
+      NoChainExtension: AugmentedError<ApiType>;
+      /**
        * The contract that was called is either no contract at all (a plain account)
        * or is a tombstone.
        **/
@@ -145,11 +179,46 @@ declare module '@polkadot/api/types/errors' {
        **/
       OutputBufferTooSmall: AugmentedError<ApiType>;
       /**
+       * The subject passed to `seal_random` exceeds the limit.
+       **/
+      RandomSubjectTooLong: AugmentedError<ApiType>;
+      /**
+       * The action performed is not allowed while the contract performing it is already
+       * on the call stack. Those actions are contract self destruction and restoration
+       * of a tombstone.
+       **/
+      ReentranceDenied: AugmentedError<ApiType>;
+      /**
+       * A storage modification exhausted the 32bit type that holds the storage size.
+       * 
+       * This can either happen when the accumulated storage in bytes is too large or
+       * when number of storage items is too large.
+       **/
+      StorageExhausted: AugmentedError<ApiType>;
+      /**
+       * The amount of topics passed to `seal_deposit_events` exceeds the limit.
+       **/
+      TooManyTopics: AugmentedError<ApiType>;
+      /**
        * Performing the requested transfer failed for a reason originating in the
        * chosen currency implementation of the runtime. Most probably the balance is
        * too low or locks are placed on it.
        **/
       TransferFailed: AugmentedError<ApiType>;
+      /**
+       * The size defined in `T::MaxValueSize` was exceeded.
+       **/
+      ValueTooLarge: AugmentedError<ApiType>;
+    };
+    ethCall: {
+      /**
+       * Signature decode fails.
+       **/
+      DecodeFailure: AugmentedError<ApiType>;
+      /**
+       * Signature and account mismatched.
+       **/
+      InvalidSignature: AugmentedError<ApiType>;
     };
     evm: {
       /**
@@ -176,16 +245,6 @@ declare module '@polkadot/api/types/errors' {
        * Withdraw fee failed
        **/
       WithdrawFailed: AugmentedError<ApiType>;
-    };
-    finalityTracker: {
-      /**
-       * Final hint must be updated only once in the block
-       **/
-      AlreadyUpdated: AugmentedError<ApiType>;
-      /**
-       * Finalized height above block number
-       **/
-      BadHint: AugmentedError<ApiType>;
     };
     grandpa: {
       /**
@@ -219,6 +278,16 @@ declare module '@polkadot/api/types/errors' {
        **/
       TooSoon: AugmentedError<ApiType>;
     };
+    imOnline: {
+      /**
+       * Duplicated heartbeat.
+       **/
+      DuplicatedHeartbeat: AugmentedError<ApiType>;
+      /**
+       * Non existent public key.
+       **/
+      InvalidKey: AugmentedError<ApiType>;
+    };
     nicks: {
       /**
        * A name is too long.
@@ -233,74 +302,6 @@ declare module '@polkadot/api/types/errors' {
        **/
       Unnamed: AugmentedError<ApiType>;
     };
-    ovm: {
-      /**
-       * challenge is already started
-       **/
-      ChallengeIsAlreadyStarted: AugmentedError<ApiType>;
-      /**
-       * challenge is not in the challenge list
-       **/
-      ChallengeIsNotInTheChallengeList: AugmentedError<ApiType>;
-      /**
-       * challenge list is not empty
-       **/
-      ChallengeListIsNotEmpty: AugmentedError<ApiType>;
-      /**
-       * challenge property is not decided to false
-       **/
-      ChallengePropertyIsNotDecidedToFalse: AugmentedError<ApiType>;
-      /**
-       * dispute period has not been passed
-       **/
-      DisputePeriodHasNotBeenPassed: AugmentedError<ApiType>;
-      /**
-       * Does not exist game
-       **/
-      DoesNotExistGame: AugmentedError<ApiType>;
-      /**
-       * game is already started
-       **/
-      GameIsAlradyStarted: AugmentedError<ApiType>;
-      /**
-       * setPredicateDecision must be called from predicate
-       **/
-      MustBeCalledFromPredicate: AugmentedError<ApiType>;
-      /**
-       * index must be less than challenges.length
-       **/
-      OutOfRangeOfChallenges: AugmentedError<ApiType>;
-      /**
-       * property is not claimed
-       **/
-      PropertyIsNotClaimed: AugmentedError<ApiType>;
-      /**
-       * undecided challenge exists
-       **/
-      UndecidedChallengeExists: AugmentedError<ApiType>;
-    };
-    plasmLockdrop: {
-      /**
-       * This claim already paid to requester.
-       **/
-      AlreadyPaid: AugmentedError<ApiType>;
-      /**
-       * Authorities reject this claim request.
-       **/
-      NotApproved: AugmentedError<ApiType>;
-      /**
-       * Votes for this claim isn't enough to pay it.
-       **/
-      NotEnoughVotes: AugmentedError<ApiType>;
-      /**
-       * Lockdrop isn't run now, request could not be processed.
-       **/
-      OutOfBounds: AugmentedError<ApiType>;
-      /**
-       * Unknown authority index in voting message.
-       **/
-      UnknownAuthority: AugmentedError<ApiType>;
-    };
     plasmRewards: {
       /**
        * Duplicate index.
@@ -311,6 +312,24 @@ declare module '@polkadot/api/types/errors' {
        **/
       InvalidEraToReward: AugmentedError<ApiType>;
     };
+    scheduler: {
+      /**
+       * Failed to schedule a call
+       **/
+      FailedToSchedule: AugmentedError<ApiType>;
+      /**
+       * Cannot find the scheduled call.
+       **/
+      NotFound: AugmentedError<ApiType>;
+      /**
+       * Reschedule failed because it does not change scheduled time.
+       **/
+      RescheduleNoChange: AugmentedError<ApiType>;
+      /**
+       * Given target block number is in the past.
+       **/
+      TargetBlockNumberInPast: AugmentedError<ApiType>;
+    };
     session: {
       /**
        * Registered duplicate key.
@@ -320,6 +339,10 @@ declare module '@polkadot/api/types/errors' {
        * Invalid ownership proof.
        **/
       InvalidProof: AugmentedError<ApiType>;
+      /**
+       * Key setting account is not live, so it's impossible to associate keys.
+       **/
+      NoAccount: AugmentedError<ApiType>;
       /**
        * No associated validator ID for account.
        **/
