@@ -18,7 +18,8 @@
     "author": "Stake Technologies <devops@stake.co.jp>",
     "license": "MIT",
     "scripts": {
-        "build": "yarn --prefix main build && yarn --prefix dusty build"
+        "build": "yarn --prefix main build && yarn --prefix dusty build",
+        "lint": "tsc --noEmit --pretty"
     },
     "dependencies": {
         "@polkadot/api": "^4.2.1"
