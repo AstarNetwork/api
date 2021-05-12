@@ -1,0 +1,25 @@
+{
+    "extends": "../../tsconfig.json",
+    "compilerOptions": {
+        "target": "esnext",
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "allowSyntheticDefaultImports": true,
+        "outDir": "lib",
+        "rootDir": ".",
+        "skipLibCheck": true,
+        "resolveJsonModule": true,
+        "esModuleInterop": true,
+        "strict": true,
+        "declaration": true,
+        "jsx": "preserve",
+        "noImplicitAny": true,
+        "noUnusedLocals": true,
+        "noImplicitReturns": true,
+        "paths": {
+            "@polkadot/api/augment": ["src/augment-api.ts"],
+            "@polkadot/types/augment": ["src/augment-types.ts"]
+        }
+    },
+    "exclude": ["scripts/**/*"]
+}

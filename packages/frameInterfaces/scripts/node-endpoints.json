@@ -1,0 +1,17 @@
+[
+    {
+        "network": "main",
+        "endpoint": "wss://rpc.plasmnet.io",
+        "staticMetadata": ""
+    },
+    {
+        "network": "dusty",
+        "endpoint": "wss://rpc.dusty.plasmnet.io",
+        "staticMetadata": ""
+    },
+    {
+        "network": "rococo",
+        "endpoint": "wss://rpc.rococo.plasmnet.io",
+        "staticMetadata": ""
+    }
+]

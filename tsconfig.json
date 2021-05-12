@@ -1,7 +1,21 @@
 {
-    "files": [],
-    "references": [
-      {"path": "./main"},
-      {"path": "./dusty"}
+    "extends": "@polkadot/dev/config/tsconfig.json",
+    "compilerOptions": {
+        "baseUrl": ".",
+        "paths": {
+            "@plasm/types/*": ["packages/frameInterfaces/*"]
+        },
+        "skipLibCheck": true,
+        "typeRoots": ["./node_modules/@polkadot/ts", "./node_modules/@types"]
+    },
+    "exclude": [
+        "build/**/*",
+        "**/build/**/*",
+        "lib/**/*",
+        "**/lib/**/*",
+        "scripts/**/*",
+        "**/scripts/**/*",
+        "tests",
+        "node_modules"
     ]
-  }
+}
