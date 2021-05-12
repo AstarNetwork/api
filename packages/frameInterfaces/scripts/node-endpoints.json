@@ -1,17 +1,22 @@
 [
     {
         "network": "main",
-        "endpoint": "wss://rpc.plasmnet.io",
-        "staticMetadata": ""
+        "endpoint": "rpc.plasmnet.io",
+        "metadata": ""
     },
     {
         "network": "dusty",
-        "endpoint": "wss://rpc.dusty.plasmnet.io",
-        "staticMetadata": ""
+        "endpoint": "rpc.dusty.plasmnet.io",
+        "metadata": ""
     },
     {
         "network": "rococo",
-        "endpoint": "wss://rpc.rococo.plasmnet.io",
-        "staticMetadata": ""
+        "endpoint": "rpc.rococo.plasmnet.io",
+        "metadata": ""
+    },
+    {
+        "network": "local",
+        "endpoint": "localhost",
+        "metadata": ""
     }
 ]

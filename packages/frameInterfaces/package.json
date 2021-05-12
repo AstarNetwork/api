@@ -24,6 +24,8 @@
     "main": "index.js",
     "scripts": {
         "build": "ts-node -r tsconfig-paths/register scripts/build.ts",
+        "fetch-types:local": "polkadot-types-from-chain --endpoint ws://localhost:9944 --output ./lib",
+        "test-log": "echo \"Hello World\"",
         "lint": "tsc --noEmit --pretty"
     },
     "dependencies": {
