@@ -1,6 +1,6 @@
 #!/usr/bin/env ts-node
 
-import endPoints from './node-endpoints.json';
+import endPoints from '../src/networkSpecs/network-config.json';
 import { exec } from 'child_process';
 
 const METADATA_REQ_PAYLOAD = {

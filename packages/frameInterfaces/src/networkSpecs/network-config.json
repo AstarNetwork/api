@@ -1,0 +1,23 @@
+[
+    {
+        "network": "plasm",
+        "version": "1.0.0",
+        "endpoint": "rpc.plasmnet.io",
+        "frames": ["dappsStaking", "operator", "ovm", "plasma", "plasmLockdrop", "plasmRewards", "trading"],
+        "metadata": ""
+    },
+    {
+        "network": "dusty",
+        "version": "1.9.3",
+        "endpoint": "rpc.dusty.plasmnet.io",
+        "frames": ["operator", "plasmLockdrop", "plasmRewards", "trading"],
+        "metadata": ""
+    },
+    {
+        "network": "parachain-collator",
+        "version": "1.8.0",
+        "endpoint": "rpc.rococo.plasmnet.io",
+        "frames": [],
+        "metadata": ""
+    }
+]
