@@ -26,6 +26,7 @@
     },
     "scripts": {
         "build": "yarn workspaces run build",
+        "build:types": "yarn workspace @plasm/types run build:types",
         "lint": "tsc --noEmit --pretty"
     },
     "devDependencies": {

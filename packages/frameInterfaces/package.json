@@ -5,7 +5,7 @@
     "type": "commonjs",
     "keywords": [
         "plasm network",
-        "typescriipt",
+        "typescript",
         "polkadot",
         "blockchain",
         "substrate",
@@ -24,9 +24,9 @@
     "main": "index.js",
     "scripts": {
         "build": "ts-node -r tsconfig-paths/register scripts/build.ts",
-        "generate:defs": "ts-node --skip-project node_modules/.bin/polkadot-types-from-defs --package @plasm/types --input ./src",
-        "generate:meta": "ts-node --skip-project node_modules/.bin/polkadot-types-from-chain --package @plasm/types --endpoint ws://localhost:9944 --output ./src",
-        "test-log": "echo \"Hello World\"",
+        "build:types": "yarn run generate:defs && yarn run generate:meta",
+        "generate:defs": "ts-node --skip-project node_modules/.bin/polkadot-types-from-defs --package @plasm/types/interfaces --input ./src/interfaces",
+        "generate:meta": "ts-node --skip-project node_modules/.bin/polkadot-types-from-chain --package @plasm/types/interfaces --endpoint ws://localhost:9944 --output ./src/interfaces",
         "lint": "tsc --noEmit --pretty"
     },
     "dependencies": {

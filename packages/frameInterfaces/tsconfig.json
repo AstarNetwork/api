@@ -5,7 +5,7 @@
         "module": "commonjs",
         "moduleResolution": "node",
         "allowSyntheticDefaultImports": true,
-        "outDir": "lib",
+        "outDir": "dist",
         "rootDir": ".",
         "skipLibCheck": true,
         "resolveJsonModule": true,
@@ -17,6 +17,7 @@
         "noUnusedLocals": true,
         "noImplicitReturns": true,
         "paths": {
+            "@plasm/types/*": ["packages/frameInterfaces/src/*"],
             "@polkadot/api/augment": ["src/augment-api.ts"],
             "@polkadot/types/augment": ["src/augment-types.ts"]
         }

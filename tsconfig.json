@@ -3,7 +3,7 @@
     "compilerOptions": {
         "baseUrl": ".",
         "paths": {
-            "@plasm/types/*": ["packages/frameInterfaces/*"]
+            "@plasm/types/*": ["packages/frameInterfaces/src/*"]
         },
         "skipLibCheck": true,
         "typeRoots": ["./node_modules/@polkadot/ts", "./node_modules/@types"]
