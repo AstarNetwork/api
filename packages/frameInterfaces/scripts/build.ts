@@ -2,7 +2,7 @@
 
 import { exec } from 'child_process';
 
-import { dustyDefinitions, plasmDefinitions } from '../src';
+import { dustyDefinitions, plasmDefinitions, allDefinitions } from '@plasm/types/src';
 
 const METADATA_REQ_PAYLOAD = {
     id: '1',
@@ -51,6 +51,8 @@ export const buildScript = async () => {
     console.log(dusty);
     console.log('Plasm Types');
     console.log(plasm);
+    console.log('All types');
+    console.log(allDefinitions);
 
     process.exit(0);
 })().catch((err) => {

@@ -1,12 +1,13 @@
 import './interfaces/augment-api';
 import './interfaces/augment-types';
 
-import * as AllTypes from '@plasm/types/interfaces/definitions';
+import * as allTypes from './interfaces/definitions';
 import { regTypesFromObject } from './helpers';
 
+// export all network types
 export * from './networkSpecs';
 
-export const allDefinitions = regTypesFromObject(AllTypes);
+export const allDefinitions = regTypesFromObject(allTypes);
 
 // export all the type definitions by default
-export default { types: allDefinitions };
+export default allDefinitions;

@@ -6,7 +6,7 @@
         "moduleResolution": "node",
         "allowSyntheticDefaultImports": true,
         "outDir": "dist",
-        "baseUrl": "./",
+        "baseUrl": "src",
         "skipLibCheck": true,
         "resolveJsonModule": true,
         "esModuleInterop": true,
@@ -17,7 +17,6 @@
         "noUnusedLocals": true,
         "noImplicitReturns": true,
         "paths": {
-            "@plasm/types/*": ["src/*"],
             "@polkadot/api/augment": ["src/interfaces/augment-api.ts"],
             "@polkadot/types/augment": ["src/interfaces/augment-types.ts"]
         }
