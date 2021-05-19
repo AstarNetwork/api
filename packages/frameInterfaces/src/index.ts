@@ -1,13 +1,12 @@
 import './interfaces/augment-api';
 import './interfaces/augment-types';
 
-import { RegistryTypes } from '@polkadot/types/types';
+import * as AllTypes from '@plasm/types/interfaces/definitions';
+import { regTypesFromObject } from './helpers';
 
-import * as PlasmTypes from '@plasm/types/interfaces/definitions';
+export * from './networkSpecs';
 
-const types = Object.values(PlasmTypes).reduce((res, { types }): object => ({ ...res, ...types }), {});
+export const allDefinitions = regTypesFromObject(AllTypes);
 
-const typeRegistry: RegistryTypes = { ...types };
-
-// export all types by default
-export default typeRegistry;
+// export all the type definitions by default
+export default { types: allDefinitions };

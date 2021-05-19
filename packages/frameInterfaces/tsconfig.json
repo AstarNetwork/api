@@ -6,7 +6,7 @@
         "moduleResolution": "node",
         "allowSyntheticDefaultImports": true,
         "outDir": "dist",
-        "rootDir": ".",
+        "baseUrl": "./",
         "skipLibCheck": true,
         "resolveJsonModule": true,
         "esModuleInterop": true,
@@ -17,9 +17,9 @@
         "noUnusedLocals": true,
         "noImplicitReturns": true,
         "paths": {
-            "@plasm/types/*": ["packages/frameInterfaces/src/*"],
-            "@polkadot/api/augment": ["src/augment-api.ts"],
-            "@polkadot/types/augment": ["src/augment-types.ts"]
+            "@plasm/types/*": ["src/*"],
+            "@polkadot/api/augment": ["src/interfaces/augment-api.ts"],
+            "@polkadot/types/augment": ["src/interfaces/augment-types.ts"]
         }
     },
     "exclude": ["scripts/**/*"]

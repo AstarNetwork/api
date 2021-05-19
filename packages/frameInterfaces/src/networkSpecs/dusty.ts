@@ -1,14 +1,15 @@
-import { RegistryTypes } from '@polkadot/types/types';
+import { typeDefsFromModuleName } from '../helpers';
 
-import { dappsStaking, operator, ovm, plasmRewards, trading } from '@plasm/types/interfaces/definitions';
+import chainConfig from './network-config.json';
 
-// todo: convert the frames array in the `network-config.json` file to types object properties for dynamic importing
+// types that needs to be manually overridden
+const customTypes = {
+    AccountInfo: 'AccountInfoWithProviders',
+};
 
-const types = Object.values({ dappsStaking, operator, ovm, plasmRewards, trading }).reduce(
-    (res, { types }): object => ({ ...res, ...types }),
-    {},
-);
+/**
+ * Type definition for Dusty Plasm Test Network
+ */
+const dustyDefinitions = typeDefsFromModuleName(chainConfig.dusty.customFrames, customTypes);
 
-const dustyRegistry: RegistryTypes = { ...types };
-
-export default dustyRegistry;
+export default dustyDefinitions;

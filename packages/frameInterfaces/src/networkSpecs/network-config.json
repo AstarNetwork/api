@@ -1,23 +1,20 @@
-[
-    {
-        "network": "plasm",
+{
+    "plasm": {
         "version": "1.0.0",
         "endpoint": "rpc.plasmnet.io",
-        "frames": ["dappsStaking", "operator", "ovm", "plasma", "plasmLockdrop", "plasmRewards", "trading"],
+        "customFrames": ["dappsStaking", "operator", "ovm", "plasma", "plasmLockdrop", "plasmRewards", "trading"],
         "metadata": ""
     },
-    {
-        "network": "dusty",
+    "dusty": {
         "version": "1.9.3",
         "endpoint": "rpc.dusty.plasmnet.io",
-        "frames": ["operator", "plasmLockdrop", "plasmRewards", "trading"],
+        "customFrames": ["operator", "plasmRewards", "trading", "ovm"],
         "metadata": ""
     },
-    {
-        "network": "parachain-collator",
+    "plasmCollator": {
         "version": "1.8.0",
         "endpoint": "rpc.rococo.plasmnet.io",
-        "frames": [],
+        "customFrames": [],
         "metadata": ""
     }
-]
+}

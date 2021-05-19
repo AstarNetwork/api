@@ -1,7 +1,8 @@
 #!/usr/bin/env ts-node
 
-import endPoints from '../src/networkSpecs/network-config.json';
 import { exec } from 'child_process';
+
+import { dustyDefinitions, plasmDefinitions } from '../src';
 
 const METADATA_REQ_PAYLOAD = {
     id: '1',
@@ -25,7 +26,7 @@ const executeShell = async (cmd: string): Promise<string> => {
     });
 };
 
-const buildScript = async () => {
+export const buildScript = async () => {
     const localNode = `http://localhost:${DEFAULT_PORT}`;
 
     //! this requires curl and a running local node to work!
@@ -36,19 +37,20 @@ const buildScript = async () => {
     const nodeMetadata = JSON.parse(result).result;
 
     console.log({ endpoint: localNode, metadata: nodeMetadata });
-
-    endPoints.forEach((i) => {
-        if (i.metadata.length > 0) {
-            console.log(`node ${i.network} has data`);
-        } else {
-            console.log(`node ${i.network} does not have any data`);
-        }
-    });
 };
 
 // script entry point
 (async () => {
-    await buildScript();
+    //await buildScript();
+
+    //note: just for testing
+    const dusty = dustyDefinitions;
+    const plasm = plasmDefinitions;
+
+    console.log('Dusty Types');
+    console.log(dusty);
+    console.log('Plasm Types');
+    console.log(plasm);
 
     process.exit(0);
 })().catch((err) => {
