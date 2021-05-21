@@ -26,11 +26,12 @@
     },
     "scripts": {
         "build": "yarn workspaces run build",
-        "build:types": "yarn workspace @plasm/types run build:types",
-        "lint": "tsc --noEmit --pretty"
+        "script:types": "yarn workspace @plasm/types"
     },
     "devDependencies": {
         "@polkadot/dev": "^0.62.14",
-        "@polkadot/ts": "^0.3.65"
+        "@polkadot/ts": "^0.3.65",
+        "lerna": "^4.0.0",
+        "typescript": "^4.2.4"
     }
 }

@@ -1,25 +1,15 @@
 {
     "extends": "../../tsconfig.json",
     "compilerOptions": {
-        "target": "esnext",
-        "module": "commonjs",
-        "moduleResolution": "node",
-        "allowSyntheticDefaultImports": true,
+        "rootDir": "src",
         "outDir": "dist",
-        "baseUrl": "src",
-        "skipLibCheck": true,
-        "resolveJsonModule": true,
-        "esModuleInterop": true,
-        "strict": true,
-        "declaration": true,
-        "jsx": "preserve",
-        "noImplicitAny": true,
-        "noUnusedLocals": true,
-        "noImplicitReturns": true,
         "paths": {
-            "@polkadot/api/augment": ["src/interfaces/augment-api.ts"],
-            "@polkadot/types/augment": ["src/interfaces/augment-types.ts"]
+            "@plasm/types": ["packages/frameInterfaces/src"],
+            "@plasm/types/*": ["packages/frameInterfaces/src/*"],
+            "@polkadot/api/augment": ["packages/frameInterfaces/src/interfaces/augment-api.ts"],
+            "@polkadot/types/augment": ["packages/frameInterfaces/src/interfaces/augment-types.ts"]
         }
     },
-    "exclude": ["scripts/**/*"]
+    "include": ["src", "src/**/*.json"],
+    "exclude": ["dist", "tests", "node_modules"]
 }
