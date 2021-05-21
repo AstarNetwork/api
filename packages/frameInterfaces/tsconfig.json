@@ -1,8 +1,8 @@
 {
     "extends": "../../tsconfig.json",
     "compilerOptions": {
-        "rootDirs": ["./src", "./dist"],
-        "outDir": "./dist",
+        "rootDir": ".",
+        "outDir": "dist",
         "paths": {
             "@plasm/types": ["packages/frameInterfaces/src"],
             "@plasm/types/*": ["packages/frameInterfaces/src/*"],
@@ -10,6 +10,6 @@
             "@polkadot/types/augment": ["packages/frameInterfaces/src/interfaces/augment-types.ts"]
         }
     },
-    "include": ["src", "src/**/*.json", "tests", "scripts"],
-    "exclude": ["dist", "node_modules"]
+    "include": ["src", "**/*.json"],
+    "exclude": ["dist", "node_modules", "tsconfig.*.json", "tsconfig.json"]
 }

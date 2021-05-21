@@ -21,14 +21,15 @@
         "url": "https://github.com/PlasmNetwork/plasm-types/issues"
     },
     "homepage": "https://github.com/PlasmNetwork/plasm-types#readme",
-    "main": "dist/index.js",
-    "types": "dist/index.d.ts",
+    "main": "src/index.js",
+    "types": "src/index.d.ts",
     "files": [
-        "dist"
+        "src"
     ],
     "scripts": {
         "fetch:types": "ts-node --project tsconfig.script.json -r tsconfig-paths/register scripts/build.ts",
-        "build": "tsc --noEmit --pretty",
+        "build": "yarn run build:lib",
+        "build:lib": "tsc --project tsconfig.json",
         "build:types": "yarn run generate:defs && yarn run generate:meta",
         "generate:defs": "ts-node --skip-project node_modules/.bin/polkadot-types-from-defs --package @plasm/types/interfaces --input ./src/interfaces",
         "generate:meta": "ts-node --skip-project node_modules/.bin/polkadot-types-from-chain --package @plasm/types/interfaces --endpoint ws://localhost:9944 --output ./src/interfaces",
