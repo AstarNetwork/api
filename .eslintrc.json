@@ -7,6 +7,9 @@
         "@typescript-eslint/no-unused-vars": "error",
         "@typescript-eslint/explicit-module-boundary-types": "off",
         "@typescript-eslint/no-explicit-any": "error",
-        "@typescript-eslint/naming-convention": ["error", { "selector": "variableLike", "format": ["camelCase"] }]
+        "@typescript-eslint/naming-convention": [
+            "error",
+            { "selector": "variableLike", "format": ["camelCase", "UPPER_CASE", "strictCamelCase"] }
+        ]
     }
 }

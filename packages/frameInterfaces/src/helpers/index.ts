@@ -1,4 +1,4 @@
-import * as AllTypes from '@plasm/types/interfaces/definitions';
+import * as AllTypes from '../interfaces/definitions';
 import { RegistryTypes } from '@polkadot/types/types';
 
 interface ModuleTypeDef {

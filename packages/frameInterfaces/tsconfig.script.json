@@ -1,0 +1,10 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "module": "commonjs",
+        "rootDir": "."
+    },
+    "ts-node": {
+        "require": ["tsconfig-paths/register"]
+    }
+}

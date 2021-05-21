@@ -2,7 +2,7 @@
 
 import { exec } from 'child_process';
 
-import { dustyDefinitions, plasmDefinitions, allDefinitions } from '@plasm/types/src';
+import { dustyDefinitions, plasmDefinitions, allDefinitions } from '../src';
 
 const METADATA_REQ_PAYLOAD = {
     id: '1',
@@ -26,6 +26,7 @@ const executeShell = async (cmd: string): Promise<string> => {
     });
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const buildScript = async () => {
     const localNode = `http://localhost:${DEFAULT_PORT}`;
 
