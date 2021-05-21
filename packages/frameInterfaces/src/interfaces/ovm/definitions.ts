@@ -1,26 +1,26 @@
-/* eslint-disable @typescript-eslint/camelcase */
+/* eslint-disable @typescript-eslint/naming-convention */
 
 export default {
     types: {
         PredicateContract: {
-            predicateHash: "Hash",
-            inputs: "Vec<u8>"
+            predicateHash: 'Hash',
+            inputs: 'Vec<u8>',
         },
         Property: {
-            predicateAddress: "AccountId",
-            inputs: "Vec<Vec<u8>>"
+            predicateAddress: 'AccountId',
+            inputs: 'Vec<Vec<u8>>',
         },
         Decision: {
-            _enum: ["Undecided", "True", "False"]
+            _enum: ['Undecided', 'True', 'False'],
         },
         ChallengeGame: {
-            property: "Property<AccountId>",
-            challenges: "Vec<Hash>",
-            decision: "Decision",
-            createdBlock: "BlockNumber"
+            property: 'Property<AccountId>',
+            challenges: 'Vec<Hash>',
+            decision: 'Decision',
+            createdBlock: 'BlockNumber',
         },
         Schedule: {
-            version: "u32",
+            version: 'u32',
             maxStackHeight: 'u32',
             maxMemoryPages: 'u32',
             maxTableSize: 'u32',
@@ -29,5 +29,5 @@ export default {
             schedule: 'Schedule',
             maxDepth: 'u32',
         },
-    }
-}
+    },
+};

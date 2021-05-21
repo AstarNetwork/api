@@ -26,6 +26,7 @@
     },
     "scripts": {
         "build": "yarn workspaces run build",
+        "clean": "lerna clean",
         "script:types": "yarn workspace @plasm/types"
     },
     "devDependencies": {

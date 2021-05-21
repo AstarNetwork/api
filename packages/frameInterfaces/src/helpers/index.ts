@@ -3,7 +3,7 @@ import { RegistryTypes } from '@polkadot/types/types';
 
 interface ModuleTypeDef {
     [key: string]: {
-        types: Object;
+        types: Record<string, unknown>;
     };
 }
 
@@ -39,6 +39,9 @@ export const typeDefsFromModuleName = (chainFrames: string[], typeOverride?: Reg
 };
 
 export const regTypesFromObject = (moduleDef: ModuleTypeDef) => {
-    const types = Object.values(moduleDef).reduce((res, { types }): object => ({ ...res, ...types }), {});
+    const types = Object.values(moduleDef).reduce(
+        (res, { types }): Record<string, unknown> => ({ ...res, ...types }),
+        {},
+    );
     return { ...types } as RegistryTypes;
 };
