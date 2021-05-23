@@ -6,8 +6,7 @@
         "skipLibCheck": true,
         "resolveJsonModule": true,
         "paths": {
-            "@plasm/*": ["packages/*/src"],
-            "@plasm/*/*": ["packages/*/src/*"]
+            "@plasm/*": ["packages/*/src"]
         },
         "typeRoots": ["./node_modules/@polkadot/ts", "./node_modules/@types"]
     }

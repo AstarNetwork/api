@@ -10,6 +10,6 @@
             "@polkadot/types/augment": ["packages/types/src/interfaces/augment-types.ts"]
         }
     },
-    "include": ["src", "**/*.json"],
+    "include": ["src", "*.json"],
     "exclude": ["dist", "node_modules", "tsconfig.*.json", "tsconfig.json"]
 }
