@@ -1,0 +1,15 @@
+{
+    "extends": "../../tsconfig.json",
+    "compilerOptions": {
+        "rootDir": ".",
+        "outDir": "dist",
+        "paths": {
+            "@plasm/types": ["packages/types/src"],
+            "@plasm/types/*": ["packages/types/src/*"],
+            "@polkadot/api/augment": ["packages/types/src/interfaces/augment-api.ts"],
+            "@polkadot/types/augment": ["packages/types/src/interfaces/augment-types.ts"]
+        }
+    },
+    "include": ["src", "**/*.json"],
+    "exclude": ["dist", "node_modules", "tsconfig.*.json", "tsconfig.json"]
+}

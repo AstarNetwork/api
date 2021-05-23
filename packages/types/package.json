@@ -28,7 +28,8 @@
     ],
     "scripts": {
         "fetch:types": "ts-node --project tsconfig.script.json -r tsconfig-paths/register scripts/build.ts",
-        "build": "yarn run build:lib",
+        "build": "yarn run clean && yarn run build:lib",
+        "clean": "rimraf dist",
         "build:lib": "tsc --project tsconfig.json",
         "build:types": "yarn run generate:defs && yarn run generate:meta",
         "generate:defs": "ts-node --skip-project node_modules/.bin/polkadot-types-from-defs --package @plasm/types/interfaces --input ./src/interfaces",
@@ -42,6 +43,7 @@
     },
     "devDependencies": {
         "@polkadot/typegen": "^4.9.2",
+        "rimraf": "^3.0.2",
         "ts-node": "^9.1.1",
         "tsconfig-paths": "^3.9.0",
         "typescript": "^4.2.4"
