@@ -21,10 +21,10 @@
         "url": "https://github.com/PlasmNetwork/plasm-types/issues"
     },
     "homepage": "https://github.com/PlasmNetwork/plasm-types#readme",
-    "main": "src/index.js",
-    "types": "src/index.d.ts",
+    "main": "index.js",
+    "types": "index.d.ts",
     "files": [
-        "src"
+        "dist"
     ],
     "scripts": {
         "fetch:types": "ts-node --project tsconfig.script.json -r tsconfig-paths/register scripts/build.ts",

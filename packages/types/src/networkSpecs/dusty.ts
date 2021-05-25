@@ -1,6 +1,6 @@
 import { typeDefsFromModuleName } from '../helpers';
 
-import chainConfig from './network-config.json';
+import chainConfig from './specs';
 
 // types that needs to be manually overridden
 const customTypes = {

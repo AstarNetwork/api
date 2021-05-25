@@ -1,6 +1,6 @@
 import { dustyDefinitions } from '../src';
 import { WsProvider, ApiPromise } from '@polkadot/api';
-import networkConfig from '../src/networkSpecs/network-config.json';
+import networkConfig from '../src/networkSpecs/specs';
 
 const connectToNode = async (endpoint: string) => {
     const wsProvider = new WsProvider(endpoint);
@@ -13,10 +13,11 @@ const connectToNode = async (endpoint: string) => {
 
 describe('Establishing a connection with Plasm nodes', () => {
     let api: ApiPromise;
-    const DUSTY_ENDPOINT = 'wss://rpc.dusty.plasmnet.io:9944';
 
     // initialize the API connection before the test
     beforeAll(async () => {
+        const DUSTY_ENDPOINT = 'wss://rpc.dusty.plasmnet.io:9944';
+
         api = await connectToNode(DUSTY_ENDPOINT);
     });
 
@@ -45,5 +46,5 @@ describe('Establishing a connection with Plasm nodes', () => {
 
     afterAll(async () => {
         await api.disconnect();
-    });
+    }, 10 * 1000);
 });

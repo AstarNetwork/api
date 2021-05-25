@@ -1,8 +1,8 @@
 // jest.config.ts
 import type { Config } from '@jest/types';
 //import { defaults } from 'jest-config';
-import { pathsToModuleNameMapper } from 'ts-jest/utils';
-import tsConfig from './tsconfig.json';
+//import { pathsToModuleNameMapper } from 'ts-jest/utils';
+//import tsConfig from './tsconfig.json';
 
 // Sync object
 const config: Config.InitialOptions = {
@@ -12,7 +12,7 @@ const config: Config.InitialOptions = {
     transform: {
         '^.+\\.(ts|js)x?$': 'ts-jest',
     },
-    moduleNameMapper: pathsToModuleNameMapper(tsConfig.compilerOptions.paths),
+    //moduleNameMapper: pathsToModuleNameMapper(tsConfig.compilerOptions.paths),
     transformIgnorePatterns: ['<rootDir>/node_modules/(?!(@polkadot)/)'],
     //moduleFileExtensions: [...defaults.moduleFileExtensions, 'ts', 'tsx'],
     //moduleDirectories: ['node_modules', 'src'],
