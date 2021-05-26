@@ -21,14 +21,14 @@
         "url": "https://github.com/PlasmNetwork/api/issues"
     },
     "homepage": "https://github.com/PlasmNetwork/api/tree/master/packages/types#readme",
-    "main": "dist/index.js",
-    "types": "dist/index.d.ts",
+    "main": "index.js",
+    "types": "index.d.ts",
     "files": [
         "dist"
     ],
     "scripts": {
         "fetch:types": "ts-node --project tsconfig.script.json -r tsconfig-paths/register scripts/readTypes.ts",
-        "build": "yarn run clean && yarn run build:lib",
+        "build": "yarn run build:lib",
         "test": "echo \"Unit test not implemented!\"",
         "clean": "rimraf dist",
         "prepublish": "yarn run lint && yarn run build",
@@ -40,7 +40,7 @@
         "lint:fix": "eslint --fix 'src/**/*.ts'"
     },
     "dependencies": {
-        "@polkadot/api": "^4.10.1",
+        "@polkadot/api": "^4.12.2",
         "cross-env": "7.0.3"
     },
     "devDependencies": {

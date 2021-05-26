@@ -1,5 +1,5 @@
 import * as AllTypes from '../interfaces/definitions';
-import { RegistryTypes } from '@polkadot/types/types';
+import type { RegistryTypes } from '@polkadot/types/types';
 
 interface ModuleTypeDef {
     [key: string]: {
