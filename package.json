@@ -1,6 +1,6 @@
 {
     "name": "root",
-    "version": "1.5.0",
+    "version": "0.0.1",
     "private": true,
     "repository": {
         "type": "git",
@@ -26,7 +26,7 @@
     },
     "scripts": {
         "build": "yarn workspaces run build",
-        "test": "yarn workspaces run test",
+        "test": "echo \"Unit test not implemented!\"",
         "lint": "yarn workspaces run lint",
         "postinstall": "lerna bootstrap",
         "clean": "lerna clean",
@@ -42,7 +42,6 @@
         "eslint-plugin-prettier": "3.4.0",
         "eslint-plugin-promise": "^5.1.0",
         "prettier": "^2.3.0",
-        "lerna": "^4.0.0",
-        "typescript": "^4.2.4"
+        "lerna": "^4.0.0"
     }
 }
