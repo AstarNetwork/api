@@ -1,4 +1,4 @@
-# Plasm Network node types
+# @plasm/types
 
 [![NPM](https://nodei.co/npm/@plasm/types.png?downloads=true)](https://www.npmjs.com/package/@plasm/types)
 

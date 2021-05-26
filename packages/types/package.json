@@ -13,14 +13,14 @@
     ],
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/PlasmNetwork/plasm-types.git"
+        "url": "git+https://github.com/PlasmNetwork/api.git"
     },
     "author": "Stake Technologies <devops@stake.co.jp>",
     "license": "MIT",
     "bugs": {
-        "url": "https://github.com/PlasmNetwork/plasm-types/issues"
+        "url": "https://github.com/PlasmNetwork/api/issues"
     },
-    "homepage": "https://github.com/PlasmNetwork/plasm-types#readme",
+    "homepage": "https://github.com/PlasmNetwork/api/tree/master/packages/types#readme",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "files": [

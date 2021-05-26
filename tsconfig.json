@@ -11,5 +11,5 @@
         },
         "typeRoots": ["./node_modules/@polkadot/ts", "./node_modules/@types"]
     },
-    "exclude": ["**/dist/**/*", "dist/**/*", "node_modules", "tests", "jest.*"]
+    "exclude": ["**/dist/**/*", "dist/**/*", "node_modules"]
 }
