@@ -15,6 +15,6 @@ jobs:
         # Defaults to the user or organization that owns the workflow file
         scope: '@plasm' 
     - run: yarn
-    - run: yarn workspaces run publish # todo: implement publishing behavior
+    - run: yarn release
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
