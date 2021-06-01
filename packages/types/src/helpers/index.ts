@@ -24,17 +24,6 @@ export const typeDefsFromModuleName = (chainFrames: string[], typeOverride?: Reg
 
     const types = regTypesFromObject(nodeTypes);
 
-    // const bundleDef: OverrideBundleDefinition = {
-    //     types: [
-    //         {
-    //             minmax: [0, undefined],
-    //             types: { ...types, ...typeOverride },
-    //         },
-    //     ],
-    // };
-
-    // return bundleDef;
-
     return { ...types, ...typeOverride } as RegistryTypes;
 };
 
