@@ -39,7 +39,7 @@
         "lint:fix": "eslint --fix 'src/**/*.ts'"
     },
     "dependencies": {
-        "@polkadot/api": "^4.12.2",
+        "@polkadot/api": "^4.12.1",
         "cross-env": "7.0.3"
     },
     "devDependencies": {
