@@ -26,12 +26,12 @@
         "dist/"
     ],
     "scripts": {
-        "fetch:types": "ts-node --project tsconfig.script.json -r tsconfig-paths/register scripts/readTypes.ts",
+        "script:test": "ts-node --project tsconfig.script.json -r tsconfig-paths/register scripts/readTypes.ts",
         "build": "yarn run clean && yarn run build:lib",
         "test": "echo \"Unit test not implemented!\"",
-        "clean": "tsc --build --clean",
+        "clean": "rimraf ./dist && tsc --build --clean",
         "prepublish": "yarn run lint && yarn run build",
-        "build:lib": "tsc --project tsconfig.json",
+        "build:lib": "tsc --project tsconfig.build.json",
         "build:types": "yarn run generate:defs && yarn run generate:meta",
         "generate:defs": "ts-node --skip-project node_modules/.bin/polkadot-types-from-defs --package @plasm/types/interfaces --input ./src/interfaces",
         "generate:meta": "ts-node --skip-project node_modules/.bin/polkadot-types-from-chain --package @plasm/types/interfaces --endpoint ws://localhost:9944 --output ./src/interfaces",

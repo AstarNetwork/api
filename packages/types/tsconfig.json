@@ -1,8 +1,6 @@
 {
     "extends": "../../tsconfig.json",
     "compilerOptions": {
-        "module": "esnext",
-        "moduleResolution": "node",
         "baseUrl": ".",
         "esModuleInterop": true,
         "allowSyntheticDefaultImports": true,
@@ -13,6 +11,12 @@
             "@plasm/types/*": ["src/*"],
             "@polkadot/api/augment": ["src/interfaces/augment-api.ts"],
             "@polkadot/types/augment": ["src/interfaces/augment-types.ts"]
+        }
+    },
+    "ts-node": {
+        "require": ["tsconfig-paths/register"],
+        "compilerOptions": {
+            "rootDir": "."
         }
     },
     "exclude": ["scripts", "dist"]
