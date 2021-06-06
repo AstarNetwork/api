@@ -39,11 +39,10 @@
         "lint:fix": "eslint --fix 'src/**/*.ts'"
     },
     "dependencies": {
-        "@polkadot/api": "^4.12.1",
-        "cross-env": "7.0.3"
+        "@polkadot/api": "^4.12.1"
     },
     "devDependencies": {
-        "@polkadot/typegen": "^4.10.1",
+        "@polkadot/typegen": "^4.12.1",
         "rimraf": "^3.0.2",
         "ts-node": "^9.1.1",
         "ts-node-dev": "^1.1.6",
