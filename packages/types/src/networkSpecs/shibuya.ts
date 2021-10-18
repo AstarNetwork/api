@@ -8,6 +8,7 @@ const definitions: RegistryTypes = {
             Wasm: 'AccountId',
         },
     },
+    EraIndex: 'u32',
     EraStakingPoints: {
         total: 'Balance',
         stakers: 'BTreeMap<AccountId, Balance>',
