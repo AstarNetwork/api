@@ -19,6 +19,9 @@
     },
     "author": "Stake Technologies <devops@stake.co.jp>",
     "license": "MIT",
+    "publishConfig": {
+        "access": "public"
+    },
     "bugs": {
         "url": "https://github.com/PlasmNetwork/api/issues"
     },
