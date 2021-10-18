@@ -5,6 +5,8 @@
     "type": "commonjs",
     "keywords": [
         "plasm",
+        "astar",
+        "shiden",
         "typescript",
         "polkadot",
         "blockchain",
