@@ -1,6 +1,6 @@
-# @plasm/types
+# @astarnetwork/types
 
-[![NPM](https://nodei.co/npm/@plasm/types.png?downloads=true)](https://www.npmjs.com/package/@plasm/types)
+[![NPM](https://nodei.co/npm/@plasm/types.png?downloads=true)](https://www.npmjs.com/package/@astarnetwork/types)
 
 This package is meant to be used with the [@polakdot-js/api](https://github.com/polkadot-js/api) library.
 
@@ -9,7 +9,7 @@ This package is meant to be used with the [@polakdot-js/api](https://github.com/
 * shidenDefinitions (Kusama Parachain)
 * shibuyaDefinitions (Shiden Testnet)
 * dustyDefinitions [deprecated]
-* shidenDefinitions [deprecated] 
+* plasmDefinitions [deprecated] 
 
 ## Usage
 
@@ -20,7 +20,7 @@ You can use the `ApiOptions` interface to set the node configuration before init
 ```ts
 import { WsProvider, ApiPromise } from '@polkadot/api';
 import { ApiOptions } from '@polkadot/api/types';
-import { shidenDefinitions} from '@plasm/types';
+import { shidenDefinitions} from '@astarnetwork/types';
 
 // using ApiOptions interface
 const options: ApiOptions = {
@@ -37,7 +37,7 @@ Or, you can pass the node types directly when initializing the API instance.
 
 ```ts
 import { WsProvider, ApiPromise } from '@polkadot/api';
-import { shidenDefinitions} from '@plasm/types';
+import { shidenDefinitions} from '@astarnetwork/types';
 
 // using the ApiPromise class
 const api = await ApiPromise.create({
@@ -53,7 +53,7 @@ await api.isReady;
 Finally, you can register the types after the API instance has already been created.
 
 ```ts
-import { shidenDefinitions} from '@plasm/types';
+import { shidenDefinitions} from '@astarnetwork/types';
 
 // already initialized api instance
 await api.registerTypes(shidenDefinitions);
