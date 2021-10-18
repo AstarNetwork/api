@@ -15,6 +15,9 @@
     "workspaces": [
         "packages/*"
     ],
+    "publishConfig": {
+        "access": "public"
+    },
     "resolutions": {
         "typescript": "~4.2.4"
     },
