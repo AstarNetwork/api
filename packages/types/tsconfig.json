@@ -7,8 +7,8 @@
         "rootDir": "./src",
         "outDir": "./dist",
         "paths": {
-            "@astarnetwork/types": ["src"],
-            "@astarnetwork/types/*": ["src/*"],
+            "@astar-network/types": ["src"],
+            "@astar-network/types/*": ["src/*"],
             "@polkadot/api/augment": ["src/interfaces/augment-api.ts"],
             "@polkadot/types/augment": ["src/interfaces/augment-types.ts"]
         }
