@@ -4,8 +4,8 @@
         "baseUrl": ".",
         "esModuleInterop": true,
         "allowSyntheticDefaultImports": true,
-        "rootDir": "src",
-        "outDir": "dist",
+        "rootDir": "./src",
+        "outDir": "./dist",
         "paths": {
             "@astarnetwork/types": ["src"],
             "@astarnetwork/types/*": ["src/*"],
